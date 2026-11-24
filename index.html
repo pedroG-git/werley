@@ -1,0 +1,1222 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Werley: der Pflege-Agent zwischen Pflegekraft, Patientin, Hausarzt, Apotheke und Lieferant.">
+<title>Werley Nursing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Werley = one care agent between everyone who cares for a person. The page leads with the network (Werley in the middle, parties snapping in like bricks),
+   then the leak between stations, the three surfaces, documentation fan-out, one case across lanes, the brick kit, trust, status. Light clinical palette, one hue per party. */
+:root{
+  --paper:#f6f9f8;--white:#ffffff;--mist:#e8f1ee;--line:#dde7e4;--line2:#c9d8d4;
+  --ink:#0f2421;--ink2:#3d5752;--ink3:#7a918c;
+  --teal:#0b5f55;--teal-2:#0e7a6c;--mint:#d6efe7;--mint-2:#a9dccc;
+  --coral:#d9534a;--coral-soft:#fbe9e7;--amber:#b7791f;--amber-soft:#fbf1df;--blue:#2f6fd6;--blue-soft:#e6eefc;
+  --care:#0e7a6c;--care-soft:#dcf1ea;--you:#6a4fd6;--you-soft:#eeeafc;--doc:#2f6fd6;--doc-soft:#e6eefc;--ven:#9a5f0c;--ven-soft:#fbf0dc;--sw:#4b605c;--sw-soft:#e6eeec;
+  --display:"Newsreader",ui-serif,Georgia,serif;
+  --body:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --shadow:0 1px 2px rgba(15,36,33,.06),0 12px 32px -12px rgba(15,36,33,.18);
+  --shadow-lg:0 2px 4px rgba(15,36,33,.05),0 30px 60px -24px rgba(15,36,33,.28);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 1.0625rem/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{margin:0;text-wrap:balance}
+h1,h2{font-family:var(--display);font-weight:400;letter-spacing:-.025em;line-height:1.02}
+h1{font-size:clamp(2.5rem,4.6vw,4rem)}
+h2{font-size:clamp(2.1rem,4.2vw,3.4rem)}
+h1 em,h2 em{font-style:italic;color:var(--teal)}
+h3{font:600 1.08rem/1.3 var(--body);letter-spacing:-.01em}
+p{margin:0}
+.kicker{display:inline-flex;align-items:center;gap:8px;font:500 .8rem/1 var(--body);color:var(--teal);letter-spacing:.01em}
+.kicker::before{content:"";width:18px;height:1.5px;background:currentColor}
+a{color:var(--teal)}
+:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:8px}
+button{font:inherit;cursor:pointer;color:inherit}
+.btn{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 22px;border-radius:999px;font:500 .98rem var(--body);text-decoration:none;border:1px solid transparent;transition:transform .2s,background .2s,box-shadow .2s}
+.btn.pri{background:var(--ink);color:var(--white)}
+.btn.pri:hover{background:var(--teal);transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn.sec{background:transparent;color:var(--ink);border-color:var(--line2)}
+.btn.sec:hover{border-color:var(--ink)}
+.btn .arr{transition:transform .2s}
+.btn:hover .arr{transform:translateX(3px)}
+.g-care{--gc:var(--care);--gs:var(--care-soft)}
+.g-you{--gc:var(--you);--gs:var(--you-soft)}
+.g-doc{--gc:var(--doc);--gs:var(--doc-soft)}
+.g-ven{--gc:var(--ven);--gs:var(--ven-soft)}
+.g-sw{--gc:var(--sw);--gs:var(--sw-soft)}
+.g-w{--gc:var(--ink);--gs:var(--mist)}
+.tag{display:inline-flex;align-items:center;gap:7px;font:500 .72rem/1.3 var(--mono);padding:6px 10px;border-radius:8px;width:max-content;max-width:100%}
+.tag::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:currentColor}
+.tag.built{background:var(--mint);color:var(--teal)}
+.tag.part{background:var(--blue-soft);color:var(--blue)}
+.tag.plan{background:var(--amber-soft);color:var(--ven)}
+
+/* nav */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:31;background:var(--paper)}
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;transition:background .3s,box-shadow .3s}
+.nav.solid{background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:saturate(1.4) blur(14px);box-shadow:0 1px 0 var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:30px;height:68px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font:600 1.15rem var(--body);letter-spacing:-.02em}
+.logo .w{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 34% 28%,#3cc2aa 0,#0e7a6c 48%,#08463f 100%);color:#fff;display:grid;place-items:center;font:italic 400 1.15rem/1 var(--display);box-shadow:0 0 0 4px rgba(14,122,108,.1)}
+.nav nav{display:flex;gap:24px}
+.nav nav a{color:var(--ink2);text-decoration:none;font-size:.93rem}
+.nav nav a:hover{color:var(--ink)}
+.nav .btn{white-space:nowrap;margin-left:auto;height:40px;padding:0 18px;font-size:.9rem}
+@media (max-width:980px){.nav nav{display:none}}
+
+/* hero */
+.hero{padding-block:24px 56px}
+.hero-top{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px 56px;align-items:end;margin-bottom:28px}
+.hero-top .t{display:grid;gap:18px}
+.hero-side{display:grid;gap:18px}
+.hero-side .lede{font-size:1.1rem;line-height:1.55;color:var(--ink2)}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px}
+@media (max-width:900px){.hero-top{grid-template-columns:minmax(0,1fr)}}
+
+/* network stage */
+.net{position:relative;height:clamp(540px,43vw,610px);border-radius:32px;overflow:hidden;border:1px solid var(--line);--oy:45%;
+  background:radial-gradient(40% 46% at 50% 45%,#d6efe6 0,rgba(214,239,230,0) 100%),linear-gradient(180deg,#fbfdfc,#eef5f3)}
+.net::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(15,36,33,.075) 1px,transparent 1px);background-size:24px 24px;pointer-events:none}
+#links{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.spk-base{fill:none;stroke:var(--line2);stroke-width:1.3;stroke-dasharray:2 6;stroke-linecap:round}
+.spk{fill:none;stroke:var(--gc);stroke-width:2.2;stroke-linecap:round;opacity:.55;transition:stroke-dashoffset .9s cubic-bezier(.5,0,.2,1)}
+.orb{position:absolute;left:50%;top:var(--oy);width:112px;height:112px;margin:-56px 0 0 -56px;border-radius:50%;z-index:4;display:grid;place-items:center;color:#fff;
+  background:radial-gradient(circle at 34% 28%,#3cc2aa 0,#0e7a6c 46%,#08463f 100%);
+  box-shadow:0 0 0 10px rgba(14,122,108,.07),0 0 0 24px rgba(14,122,108,.04),0 24px 50px -12px rgba(8,70,63,.6);transition:transform .35s cubic-bezier(.3,1.5,.5,1)}
+.orb .w{font:italic 400 3.1rem/1 var(--display);transform:translateY(-2px)}
+.orb::before,.orb::after{content:"";position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(14,122,108,.45);animation:ring 3.4s ease-out infinite}
+.orb::after{animation-delay:1.7s}
+@keyframes ring{from{transform:scale(1);opacity:.8}to{transform:scale(2.1);opacity:0}}
+.orb .scan{position:absolute;inset:-7px;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 60%,rgba(60,194,170,.95) 90%,transparent 100%);
+  -webkit-mask:radial-gradient(closest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));mask:radial-gradient(closest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));opacity:0;transition:opacity .3s;animation:spin 1.1s linear infinite}
+.orb.busy{transform:scale(1.07)}
+.orb.busy .scan{opacity:1}
+@keyframes spin{to{transform:rotate(360deg)}}
+.orb-l{position:absolute;left:50%;top:calc(var(--oy) + 64px);transform:translateX(-50%);z-index:4;text-align:center;display:grid;gap:1px;pointer-events:none;background:rgba(246,250,248,.92);padding:3px 10px 4px;border-radius:9px}
+.orb-l b{font:600 .95rem var(--body);letter-spacing:-.01em}
+.orb-l span{font:500 .68rem var(--mono);color:var(--ink3);white-space:nowrap}
+.wact{position:absolute;left:50%;top:calc(var(--oy) - 104px);z-index:5;transform:translate(-50%,6px);opacity:0;transition:opacity .25s,transform .35s;background:var(--ink);color:#fff;font:500 .74rem/1 var(--mono);padding:8px 12px;border-radius:999px;white-space:nowrap;pointer-events:none}
+.wact::after{content:"";position:absolute;left:50%;bottom:-4px;width:8px;height:8px;margin-left:-4px;background:var(--ink);transform:rotate(45deg)}
+.wact.show{opacity:1;transform:translate(-50%,0)}
+.node{position:absolute;left:var(--x);top:var(--y);width:clamp(150px,16.5vw,212px);transform:translate(-50%,-50%);z-index:2}
+.ghost{position:absolute;inset:0;border:1.5px dashed var(--line2);border-radius:16px;display:grid;place-items:center;font:500 .76rem var(--body);color:var(--ink3);background:rgba(255,255,255,.45);transition:opacity .35s}
+.nc{position:relative;background:var(--white);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:12px 12px 10px;display:grid;grid-template-columns:34px minmax(0,1fr);column-gap:10px;align-items:center;
+  opacity:0;transform:translateY(-22px) scale(.9);transition:opacity .3s,transform .6s cubic-bezier(.3,1.55,.5,1)}
+.node.in .nc{opacity:1;transform:none}
+.node.in .ghost{opacity:0}
+.node.instant .nc,.node.instant .ghost{transition:none}
+.nc .av{grid-row:span 2;width:34px;height:34px;border-radius:11px;background:var(--gs);color:var(--gc);display:grid;place-items:center;font:600 .76rem var(--body)}
+.nc b{font-weight:600;font-size:.86rem;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nc .role{font-size:.72rem;line-height:1.3;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nc .st{grid-column:1/-1;margin-top:8px;padding-top:7px;border-top:1px solid var(--line);font:500 .7rem/1.2 var(--mono);color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .3s}
+.nc .st.fl{color:var(--gc)}
+.nc .app{position:absolute;top:-9px;right:10px;font:500 .6rem/1 var(--mono);letter-spacing:.02em;padding:4px 7px;border-radius:6px;background:var(--gc);color:#fff}
+.nc::after{content:"";position:absolute;inset:-1px;border-radius:16px;border:2px solid var(--gc);opacity:0;pointer-events:none}
+.node.got .nc::after{animation:ping .9s ease-out}
+@keyframes ping{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.14)}}
+.plate{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:2;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px 12px;width:max-content;max-width:calc(100% - 32px);background:var(--white);border:1px solid var(--line);border-radius:14px;padding:10px 14px;box-shadow:var(--shadow)}
+.plate::before{content:"";position:absolute;left:18px;right:18px;top:-6px;height:6px;background:radial-gradient(circle at 6px 6px,var(--line2) 0 4px,transparent 4.5px) 0 0/16px 6px repeat-x}
+.plate b{font:600 .8rem var(--body);white-space:nowrap}
+.plate .chips{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
+.plate .chips span{font:500 .66rem/1 var(--mono);padding:5px 7px;border-radius:7px;background:var(--sw-soft);color:var(--sw);transition:background .3s,color .3s}
+.plate.got .chips span{background:var(--sw);color:#fff}
+.pk{position:absolute;left:0;top:0;z-index:6;pointer-events:none;will-change:transform}
+.pk i{position:absolute;left:-6px;top:-6px;width:12px;height:12px;border-radius:50%;background:var(--gc);box-shadow:0 0 0 4px color-mix(in srgb,var(--gc) 20%,transparent),0 0 18px 2px color-mix(in srgb,var(--gc) 55%,transparent)}
+.pk span{position:absolute;left:0;top:-42px;white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis;font:500 .76rem/1.2 var(--body);color:var(--ink);background:var(--white);border:1px solid var(--line);border-left:3px solid var(--gc);padding:6px 10px;border-radius:9px;box-shadow:var(--shadow)}
+.phases{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:14px}
+.ph{position:relative;overflow:hidden;border:1px solid var(--line);background:var(--white);border-radius:14px;padding:11px 14px 13px;text-align:left;display:grid;gap:2px;transition:border-color .3s,box-shadow .3s}
+.ph .n{font:500 .68rem var(--mono);color:var(--ink3)}
+.ph b{font:600 .9rem var(--body);color:var(--ink);white-space:nowrap}
+.ph .sub{font-size:.76rem;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ph .pb{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--teal-2);transition:width .5s}
+.ph.on{border-color:var(--teal-2);box-shadow:0 0 0 3px rgba(14,122,108,.12)}
+.ph:hover{border-color:var(--line2)}
+.cap{display:flex;flex-wrap:wrap;gap:18px 40px;justify-content:space-between;align-items:flex-start;margin-top:20px}
+.cap .l{display:grid;gap:12px;max-width:46em;min-width:0}
+.cap p{font-size:1.02rem;color:var(--ink2);min-height:3.2em}
+.cap p b{color:var(--ink);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--ink3)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:9px;height:9px;border-radius:50%;background:var(--gc)}
+.ctr{display:flex;gap:28px}
+.ctr div{display:grid;gap:4px}
+.ctr b{font:400 2rem/1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.ctr span{font-size:.75rem;color:var(--ink3)}
+.ctr .zero b{color:var(--teal)}
+@media (max-width:760px){
+  .net{height:840px;--oy:48%;border-radius:24px}
+  .node{left:var(--mx);top:var(--my);width:calc(50% - 14px)}
+  .nc{grid-template-columns:30px minmax(0,1fr);padding:11px 10px 9px;column-gap:8px}
+  .nc .av{width:30px;height:30px;border-radius:9px;font-size:.7rem}
+  .nc b{font-size:.78rem}
+  .nc .role{font-size:.66rem}
+  .nc .st{font-size:.64rem}
+  .orb{width:88px;height:88px;margin:-44px 0 0 -44px}
+  .orb .w{font-size:2.5rem}
+  .orb-l{top:calc(var(--oy) + 52px)}
+  .wact{top:calc(var(--oy) - 84px);font-size:.68rem}
+  .pk span{max-width:170px;font-size:.7rem}
+  .ph{padding:9px 8px 11px}
+  .ph b{font-size:.78rem}
+  .ph .sub,.ph .pre{display:none}
+  .ctr{gap:20px}
+}
+
+section{padding-block:clamp(72px,10vw,136px)}
+.head{display:grid;gap:20px;max-width:800px;margin-bottom:52px}
+.head .lede{font-size:1.16rem;color:var(--ink2);max-width:36em}
+
+/* leak */
+.lanes{display:grid;gap:16px}
+.lane{background:var(--white);border:1px solid var(--line);border-radius:22px;padding:22px 26px 20px;display:grid;gap:14px}
+.lane-h{display:flex;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;align-items:center}
+.lane-h b{font:600 1rem var(--body)}
+.res{font:500 .76rem var(--mono);padding:6px 10px;border-radius:999px;opacity:0;transition:opacity .4s}
+.res.show{opacity:1}
+.old .res{background:var(--coral-soft);color:var(--coral)}
+.new .res{background:var(--mint);color:var(--teal)}
+.track{position:relative;height:54px;margin-inline:6px}
+.rail,.fillr{position:absolute;left:14px;top:10px;height:2px;border-radius:2px}
+.rail{right:14px;background:var(--line)}
+.fillr{width:calc((100% - 28px) * var(--pp,0));transition:width 1s cubic-bezier(.5,0,.3,1)}
+.old .fillr{background:repeating-linear-gradient(90deg,var(--coral) 0 6px,transparent 6px 10px)}
+.new .fillr{background:var(--teal-2)}
+.sta{position:absolute;top:0;left:calc(14px + (100% - 28px) * var(--p));transform:translateX(-50%);display:grid;justify-items:center;gap:7px}
+.sta .d{width:22px;height:22px;border-radius:50%;background:var(--white);border:2px solid var(--line2);transition:background .3s,border-color .3s}
+.sta .l{font-size:.78rem;color:var(--ink3);white-space:nowrap;transition:color .3s}
+.sta.on .l{color:var(--ink)}
+.old .sta.on .d{border-color:var(--coral);background:var(--coral-soft)}
+.new .sta.on .d{border-color:var(--teal-2);background:var(--mint)}
+.puck{position:absolute;top:4px;left:calc(14px + (100% - 28px) * var(--pp,0));width:14px;height:14px;margin-left:-7px;border-radius:50%;z-index:1;transition:left 1s cubic-bezier(.5,0,.3,1)}
+.old .puck{background:var(--coral);box-shadow:0 0 0 5px rgba(217,83,74,.15)}
+.new .puck{background:var(--teal-2);box-shadow:0 0 0 5px rgba(14,122,108,.15)}
+.msg{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.it{font:500 .9rem var(--body);padding:6px 11px;border-radius:9px;background:var(--mist);transition:filter .4s,opacity .4s,background .4s,color .4s}
+.it.blur{filter:blur(1.8px);opacity:.75}
+.it.lost{text-decoration:line-through;opacity:.4;background:transparent;box-shadow:inset 0 0 0 1px var(--line2)}
+.it.wrong{background:var(--coral-soft);color:var(--coral)}
+.new .it{background:var(--mint);color:var(--teal)}
+.msg .note{font:400 .78rem var(--mono);color:var(--ink3);margin-left:auto}
+.illu{font-size:.82rem;color:var(--ink3);margin-top:12px}
+.proof-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line2);margin-top:48px}
+.proof-grid > div{padding:28px 28px 0 0;display:grid;gap:10px;align-content:start}
+.proof-grid > div + div{padding-left:28px;border-left:1px solid var(--line)}
+.num{font:400 clamp(2.8rem,5vw,4.2rem)/1 var(--display);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.num small{font-size:.42em;letter-spacing:0;color:var(--ink2);margin-left:6px}
+.proof-grid p{color:var(--ink2);font-size:.98rem;max-width:26em}
+.src{font:400 .76rem/1.4 var(--mono);color:var(--ink3)}
+@media (max-width:820px){.proof-grid{grid-template-columns:minmax(0,1fr)}.proof-grid > div + div{padding-left:0;border-left:0;border-top:1px solid var(--line)}.proof-grid > div{padding:24px 0}}
+@media (max-width:560px){.lane{padding:18px 16px}.sta .l{font-size:.68rem}.msg .note{margin-left:0;width:100%}.it{font-size:.84rem}}
+
+/* surfaces */
+.prods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto auto;gap:0 20px}
+.prod{background:var(--white);border:1px solid var(--line);border-radius:28px;overflow:hidden;display:grid;grid-template-rows:auto 1fr}
+@media (min-width:1060.02px){.prod{grid-row:span 2;grid-template-rows:subgrid}}
+.dev{min-height:480px;display:grid;grid-template-columns:minmax(0,1fr);place-items:center;padding:28px 22px}
+.prod.g-care .dev{background:radial-gradient(90% 70% at 85% 0%,var(--care-soft),transparent 70%),linear-gradient(160deg,#f2f9f7,#e4f1ec)}
+.prod.g-you .dev{background:radial-gradient(90% 70% at 85% 0%,var(--you-soft),transparent 70%),linear-gradient(160deg,#f7f5fe,#ebe7fa)}
+.prod.g-doc .dev{background:radial-gradient(90% 70% at 85% 0%,var(--doc-soft),transparent 70%),linear-gradient(160deg,#f4f7fe,#e5ecfb)}
+.ptxt{padding:24px 26px 28px;display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-content:start;border-top:1px solid var(--line)}
+.pname{font:400 2rem/1 var(--display);letter-spacing:-.02em}
+.pname em{color:var(--gc)}
+.pfor{font:500 .8rem var(--body);color:var(--gc)}
+.ptxt p{color:var(--ink2);font-size:.98rem}
+.gain{list-style:none;margin:0;padding:0;display:grid;gap:7px;font-size:.92rem;color:var(--ink2)}
+.gain li{display:flex;gap:9px}
+.gain li::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--gc);margin-top:.62em}
+@media (max-width:1060px){.prods{grid-template-columns:minmax(0,1fr);grid-template-rows:none;gap:20px}.prod{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:none}.ptxt{border-top:0;border-left:1px solid var(--line);align-content:center}}
+@media (max-width:720px){.prod{grid-template-columns:minmax(0,1fr)}.ptxt{border-left:0;border-top:1px solid var(--line)}.dev{min-height:0;padding:24px 16px}}
+/* tablet */
+.tab{width:100%;max-width:330px;background:var(--white);border-radius:22px;box-shadow:var(--shadow-lg);padding:16px;display:grid;gap:12px}
+.tab,.voice,.rows,.phone,.y-form,.y-sent,.ib-body,.fsrc{grid-template-columns:minmax(0,1fr)}
+.voice canvas{max-width:100%;min-width:0}
+.tb-head{display:flex;align-items:center;gap:10px}
+.av2{flex:none;width:36px;height:36px;border-radius:50%;background:var(--mint);color:var(--teal);display:grid;place-items:center;font:600 .8rem var(--body)}
+.tb-who{flex:1;min-width:0}
+.tb-name,.tb-meta{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-name{font-weight:600;font-size:.92rem;line-height:1.2}
+.tb-meta{font-size:.72rem;color:var(--ink3)}
+.pill{display:inline-flex;align-items:center;font:500 .66rem/1 var(--body);padding:5px 8px;border-radius:999px;white-space:nowrap;background:var(--coral-soft);color:var(--coral);flex:none}
+.voice{background:var(--mist);border-radius:14px;padding:10px 12px;display:grid;gap:6px}
+.voice .lbl{display:flex;align-items:center;gap:7px;font:500 .7rem var(--body);color:var(--ink3)}
+.voice .lbl i{width:7px;height:7px;border-radius:50%;background:var(--coral);animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.25}}
+.voice canvas{display:block;width:100%;height:22px}
+.voice .say{min-height:2.7em;font-size:.84rem;line-height:1.35}
+.rows{display:grid}
+.row{display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 4px;border-top:1px solid var(--line);font-size:.82rem}
+.row:first-child{border-top:0}
+.row .ck{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line2);display:grid;place-items:center;transition:all .35s}
+.row .ck svg{width:10px;height:10px;color:#fff;opacity:0;transition:opacity .3s}
+.row .k{color:var(--ink2)}
+.row .v{font-family:var(--mono);font-size:.74rem;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:10em;text-align:right}
+.row.on .ck{background:var(--teal-2);border-color:var(--teal-2)}
+.row.on .ck svg{opacity:1}
+.row.on .v{color:var(--ink)}
+.row.flash{background:linear-gradient(90deg,var(--mint),transparent);border-radius:8px}
+.row.warn .v{color:var(--amber)}
+.row.bad .v{color:var(--coral)}
+.tal-w{min-height:56px}
+.tal{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:12px;font-size:.78rem;line-height:1.35;opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s}
+.tal.show{opacity:1;transform:none}
+.tal.amber{background:var(--amber-soft)}.tal.coral{background:var(--coral-soft)}.tal.blue{background:var(--blue-soft)}
+.tal .ic{flex:none;width:24px;height:24px;border-radius:7px;background:var(--white);display:grid;place-items:center}
+.tal.amber .ic{color:var(--amber)}.tal.coral .ic{color:var(--coral)}.tal.blue .ic{color:var(--blue)}
+.tal .ic svg{width:14px;height:14px}
+.tal b{display:block;font-weight:600;font-size:.82rem}
+.tal span{color:var(--ink2)}
+/* phone */
+.phone{width:258px;max-width:100%;background:#fbfaff;border:9px solid #1b2326;border-radius:38px;padding:30px 16px 18px;display:grid;gap:12px;box-shadow:var(--shadow-lg);position:relative}
+.phone::before{content:"";position:absolute;top:8px;left:50%;width:70px;height:7px;margin-left:-35px;border-radius:9px;background:#1b2326}
+.y-hi{display:grid;gap:2px}
+.y-hi span{font:500 .66rem var(--mono);color:var(--you)}
+.y-hi b{font:400 1.35rem/1.1 var(--display);letter-spacing:-.01em}
+.y-next{background:var(--white);border:1px solid #e4e0f5;border-radius:14px;padding:9px 12px;display:grid;font-size:.8rem}
+.y-next span{font-size:.68rem;color:var(--ink3)}
+.y-form,.y-sent{display:grid;gap:10px}
+.y-q{font-weight:600;font-size:.92rem;line-height:1.3}
+.y-q.sm{font-size:.84rem}
+.y-val{display:flex;align-items:baseline;gap:8px}
+.y-val b{font:400 2.6rem/1 var(--display);color:var(--you);font-variant-numeric:tabular-nums}
+.y-val span{font-size:.84rem;color:var(--ink2)}
+.phone input[type=range]{width:100%;accent-color:var(--you);height:26px;margin:0}
+.loc{display:flex;gap:6px;flex-wrap:wrap}
+.loc button{border:1.5px solid #ddd7f4;background:var(--white);border-radius:999px;padding:7px 12px;font-size:.82rem}
+.loc button[aria-pressed="true"]{background:var(--you);border-color:var(--you);color:#fff}
+.y-send{border:0;border-radius:14px;background:var(--you);color:#fff;font-weight:600;padding:13px;font-size:.92rem;margin-top:2px}
+.y-send:hover{filter:brightness(1.08)}
+.y-msg{background:var(--you);color:#fff;border-radius:14px;border-bottom-right-radius:4px;padding:10px 12px;font-size:.86rem;justify-self:end;max-width:92%}
+.y-st{font:500 .74rem/1.4 var(--mono);color:var(--ink3);opacity:.25;transition:opacity .4s,color .4s}
+.y-st.on{opacity:1;color:var(--teal)}
+.y-again{justify-self:start;border:0;background:none;color:var(--you);font-size:.84rem;padding:4px 0;text-decoration:underline;text-underline-offset:3px}
+/* connect inbox */
+.inbox{width:100%;max-width:330px;background:var(--white);border-radius:20px;box-shadow:var(--shadow-lg);overflow:hidden;font-size:.82rem}
+.ib-top{display:flex;align-items:center;gap:8px;padding:12px 14px;background:#f3f6fd;border-bottom:1px solid #e1e8f7}
+.ib-top b{font-weight:600;font-size:.84rem;color:var(--doc)}
+.ib-top span{color:var(--ink3);font-size:.74rem}
+.badge{margin-left:auto;background:var(--doc);color:#fff!important;border-radius:999px;padding:3px 8px;font:500 .66rem var(--mono)!important}
+.badge.zero{background:var(--mint);color:var(--teal)!important}
+.ib-body{padding:14px;display:grid;gap:11px}
+.ib-h{display:flex;gap:10px;align-items:center}
+.ib-h .av{flex:none;width:32px;height:32px;border-radius:10px;background:var(--care-soft);color:var(--care);display:grid;place-items:center;font:600 .72rem var(--body)}
+.ib-h b{display:block;font-weight:600;font-size:.9rem;line-height:1.25}
+.ib-h span{font-size:.72rem;color:var(--ink3)}
+.ib-pt{font-size:.76rem;color:var(--ink2);background:var(--mist);border-radius:8px;padding:6px 9px}
+.sbar{display:grid;gap:4px;font-size:.78rem;line-height:1.4;color:var(--ink2)}
+.sbar b{display:inline-block;width:1.4em;color:var(--doc);font-family:var(--mono)}
+.due{display:grid;grid-template-columns:auto auto;justify-content:space-between;gap:6px;font:500 .72rem var(--mono);color:var(--ink2)}
+.due .bar{grid-column:1/-1;height:5px;border-radius:9px;background:var(--mist);overflow:hidden}
+.due .bar i{display:block;height:100%;width:14%;background:var(--amber);border-radius:9px;transition:width 1s linear}
+.ib-act{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.ib-act button,.ib-edit .send,.ib-done button{border:1px solid var(--line2);background:var(--white);border-radius:10px;padding:9px 4px;font-size:.78rem;font-weight:500}
+.ib-act button.pri,.ib-edit .send{background:var(--doc);border-color:var(--doc);color:#fff}
+.ib-edit{display:grid;gap:8px}
+.erow{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.8rem;border:1px solid var(--line);border-radius:10px;padding:7px 10px}
+.erow input{width:18px;height:18px;accent-color:var(--doc);margin:0}
+.seg{display:flex;background:var(--mist);border-radius:8px;padding:2px}
+.seg button{border:0;background:none;border-radius:6px;padding:5px 9px;font-size:.76rem;color:var(--ink2)}
+.seg button[aria-pressed="true"]{background:var(--white);color:var(--ink);box-shadow:0 1px 3px rgba(15,36,33,.14)}
+.ib-done{display:grid;gap:6px}
+.ib-done div{font:500 .74rem/1.4 var(--mono);color:var(--teal)}
+.ib-done button{justify-self:start;padding:7px 12px;margin-top:4px}
+.swband{margin-top:20px;background:var(--white);border:1px solid var(--line);border-radius:24px;padding:26px 28px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px 40px;align-items:center}
+.swband .t{display:grid;gap:10px}
+.swband h3{font:400 1.6rem/1.15 var(--display);letter-spacing:-.015em}
+.swband p{color:var(--ink2);font-size:.96rem}
+.swband .chips{display:flex;flex-wrap:wrap;gap:6px}
+.swband .chips span{font:500 .74rem var(--mono);padding:6px 9px;border-radius:8px;background:var(--sw-soft);color:var(--sw)}
+@media (max-width:860px){.swband{grid-template-columns:minmax(0,1fr)}}
+
+/* documentation fan-out */
+.flow{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 150px minmax(0,1fr);column-gap:64px;align-items:center}
+.flsvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.fl{fill:none;stroke:var(--line2);stroke-width:1.6;stroke-dasharray:4 6}
+.flow.rel .fl{stroke:var(--teal-2)}
+.flow.rel .fl.out{stroke:var(--gc);animation:dash 1s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-20}}
+.fsrc{position:relative;z-index:1;background:var(--white);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:22px;display:grid;gap:12px}
+.fsrc .hd{display:flex;justify-content:space-between;gap:10px;font:600 .95rem var(--body)}
+.fsrc .hd span{font:500 .72rem var(--mono);color:var(--ink3);white-space:nowrap}
+.quote{background:var(--mist);border-radius:14px;border-bottom-left-radius:4px;padding:11px 14px;font-size:.9rem}
+.quote small{display:block;font:500 .68rem var(--body);color:var(--ink3);margin-bottom:3px}
+.flds div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--line);font-size:.86rem}
+.flds span{color:var(--ink3)}
+.flds b{font-weight:500;text-align:right}
+.fgate{position:relative;z-index:1;display:grid;justify-items:center;gap:10px;text-align:center}
+.gbtn{width:116px;height:116px;border-radius:50%;border:0;background:var(--ink);color:#fff;display:grid;place-items:center;align-content:center;gap:6px;font:600 .9rem var(--body);box-shadow:0 0 0 8px rgba(15,36,33,.06),var(--shadow);transition:background .3s,transform .2s}
+.gbtn svg{width:26px;height:26px}
+.gbtn:hover{transform:scale(1.04)}
+.flow:not(.rel) .gbtn{animation:breathe 2.4s ease-in-out infinite}
+@keyframes breathe{50%{box-shadow:0 0 0 18px rgba(15,36,33,.04),var(--shadow)}}
+.flow.rel .gbtn{background:var(--teal)}
+.fgate small{font:500 .74rem var(--mono);color:var(--ink3)}
+.fdest{position:relative;z-index:1;display:grid;gap:10px}
+.dst{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:12px;align-items:center;text-align:left;background:var(--white);border:1px solid var(--line);border-radius:14px;padding:12px 14px;opacity:.6;transition:opacity .3s,border-color .3s,box-shadow .3s,transform .3s}
+.dst i{width:10px;height:10px;border-radius:50%;background:var(--line2);transition:background .3s}
+.dst .dn{display:grid;min-width:0}
+.dst b{font-weight:600;font-size:.92rem}
+.dst .dn span{font-size:.76rem;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dst .ds{font:500 .7rem var(--mono);color:var(--ink3);white-space:nowrap}
+.dst.on{opacity:1}
+.dst.on i{background:var(--gc)}
+.dst.on .ds{color:var(--teal)}
+.dst.sel{border-color:var(--gc);box-shadow:0 0 0 3px color-mix(in srgb,var(--gc) 16%,transparent);transform:translateX(4px)}
+.payload{margin-top:24px;background:var(--white);border:1px solid var(--line);border-radius:22px;padding:24px 26px;display:grid;gap:16px;min-height:232px;align-content:start}
+.ph2{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ph2 b{font:600 1rem var(--body)}
+.pdot{width:10px;height:10px;border-radius:50%;background:var(--gc)}
+.fmt{margin-left:auto;font:500 .74rem var(--mono);padding:5px 9px;border-radius:7px;background:var(--gs);color:var(--gc)}
+.pgrid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:28px}
+.pl{display:block;font:500 .7rem var(--body);letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);margin-bottom:10px}
+.lines{font:400 .84rem/1.75 var(--mono);white-space:pre-wrap;border-left:3px solid var(--gc);padding-left:14px;overflow-wrap:anywhere}
+.payload ul{margin:0;padding:0;list-style:none;display:grid;gap:6px;font-size:.92rem;color:var(--ink2)}
+.payload li::before{content:"✕";color:var(--coral);margin-right:8px;font-size:.8em}
+.payload li.ok::before{content:"✓";color:var(--teal)}
+.why{margin-top:12px;font-size:.84rem;color:var(--ink3)}
+.waiting{color:var(--ink3);font-size:.98rem;align-self:center}
+.replay{margin-top:14px;display:flex;justify-content:flex-end}
+.replay button{border:0;background:none;color:var(--teal);font-size:.9rem;text-decoration:underline;text-underline-offset:3px;padding:6px 0}
+@media (max-width:900px){.flow{grid-template-columns:minmax(0,1fr);gap:30px}.fdest{grid-template-columns:repeat(2,minmax(0,1fr))}.pgrid{grid-template-columns:minmax(0,1fr);gap:18px}.dst.sel{transform:none}}
+@media (max-width:620px){.fdest{grid-template-columns:minmax(0,1fr)}.payload{padding:20px 18px}.fmt{margin-left:0}}
+
+/* case swimlane */
+.swwrap{position:relative;background:var(--white);border:1px solid var(--line);border-radius:26px;padding:30px 30px 26px}
+.sw{position:relative;display:grid}
+#swsvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.swb{fill:none;stroke:var(--line2);stroke-width:2;stroke-dasharray:1 6;stroke-linecap:round}
+.swl{fill:none;stroke:var(--teal-2);stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.lab{position:relative;z-index:2;display:grid;align-content:start;gap:2px;padding-top:10px}
+.lab b{font:600 .9rem var(--body);color:var(--gc)}
+.lab span{font:500 .68rem var(--mono);color:var(--ink3)}
+.ln{position:relative}
+.ln::before{content:"";position:absolute;background:color-mix(in srgb,var(--gc) 24%,transparent)}
+.evd{position:relative;z-index:2;width:16px;height:16px;border-radius:50%;background:var(--white);border:2px solid var(--line2);justify-self:center;align-self:start;transition:background .3s,border-color .3s,box-shadow .3s}
+.evd.on{background:var(--gc);border-color:var(--gc);box-shadow:0 0 0 5px var(--gs)}
+.evd.g-w.on{background:radial-gradient(circle at 34% 28%,#3cc2aa,#0b5f55);border-color:#0b5f55;box-shadow:0 0 0 5px var(--mint)}
+.evt{position:relative;z-index:2;font-size:.78rem;line-height:1.38;color:var(--ink2);opacity:.3;transition:opacity .4s;min-width:0;align-self:start}
+.evt b{display:block;font:500 .68rem var(--mono);color:var(--gc);margin-bottom:2px}
+.evt.g-w b{color:var(--teal)}
+.evt.on{opacity:1}
+.swleg{display:flex;flex-wrap:wrap;gap:8px 14px;margin-bottom:18px;font-size:.78rem;color:var(--ink2)}
+.swleg span{display:inline-flex;align-items:center;gap:6px}
+.swleg i{width:9px;height:9px;border-radius:50%;background:var(--gc)}
+.stamp{position:absolute;right:24px;top:-17px;z-index:3;background:var(--teal);color:#fff;font:500 .8rem var(--mono);padding:8px 14px;border-radius:999px;opacity:0;transform:scale(.7) rotate(-6deg);transition:opacity .3s,transform .45s cubic-bezier(.3,1.6,.5,1);box-shadow:var(--shadow)}
+.stamp.show{opacity:1;transform:rotate(-3deg)}
+@media (min-width:1000px){
+  .sw{grid-template-columns:150px repeat(10,minmax(0,1fr));grid-template-rows:repeat(5,118px)}
+  .swleg,.evt .who{display:none}
+  .ln::before{left:0;right:0;top:21px;height:2px}
+  .ln[data-l="1"],.ln[data-l="3"]{background:linear-gradient(180deg,transparent,rgba(232,241,238,.55) 20%,rgba(232,241,238,.55) 80%,transparent)}
+  .evd{margin-top:13px}
+  .evt{margin-top:40px;text-align:center;padding-inline:6px}
+}
+@media (max-width:999.98px){
+  .sw{grid-template-columns:repeat(5,18px) 16px minmax(0,1fr);grid-template-rows:repeat(10,auto)}
+  .lab{display:none}
+  .swwrap{padding:22px 18px 10px}
+  .ln::before{top:0;bottom:0;left:50%;width:2px;margin-left:-1px}
+  .evd{margin-top:2px}
+  .evt{padding-bottom:18px;font-size:.86rem}
+  .stamp{right:16px}
+}
+
+/* brick kit */
+#baukasten{background:linear-gradient(180deg,var(--mist),var(--paper) 70%)}
+.bk{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:32px;align-items:start}
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.presets span{font-size:.86rem;color:var(--ink3);align-self:center;margin-right:4px}
+.presets button{border:1px solid var(--line2);background:var(--white);border-radius:999px;padding:9px 16px;font-size:.9rem;color:var(--ink2)}
+.presets button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.bricks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 12px;padding-top:6px}
+.brick{position:relative;text-align:left;background:var(--white);border:1.5px solid var(--line);border-radius:12px;padding:14px 14px 12px;display:grid;gap:3px;align-content:start;transition:background .25s,border-color .25s,transform .25s,box-shadow .25s}
+.brick::before{content:"";position:absolute;top:-6px;left:14px;width:56px;height:6px;background:radial-gradient(circle at 6px 6px,var(--line2) 0 4.5px,transparent 5px) 0 0/20px 6px repeat-x}
+.brick[aria-pressed="true"]{background:var(--gs);border-color:var(--gc);box-shadow:0 8px 16px -10px color-mix(in srgb,var(--gc) 70%,transparent)}
+.brick[aria-pressed="true"]::before{background-image:radial-gradient(circle at 6px 6px,var(--gc) 0 4.5px,transparent 5px)}
+.brick:hover{transform:translateY(-2px)}
+.brick b{font-weight:600;font-size:.95rem;line-height:1.25}
+.brick .bd{font-size:.8rem;color:var(--ink2);line-height:1.35}
+.brick .bs{margin-top:6px;font:500 .66rem var(--mono);color:var(--teal)}
+.brick.plan{border-style:dashed}
+.brick.plan .bs{color:var(--ven)}
+.mine{position:sticky;top:calc(env(safe-area-inset-top,0px) + 92px);background:var(--ink);color:#e9f2ef;border-radius:24px;padding:26px;display:grid;gap:18px}
+.mine h3{color:#fff;font:400 1.7rem/1.1 var(--display);letter-spacing:-.015em}
+.tw{display:flex;flex-direction:column-reverse;gap:4px;min-height:120px;padding:12px 12px 14px;border-radius:14px;background:#152f2b;border-bottom:6px solid #2a4c47}
+.tw i{position:relative;display:flex;align-items:center;height:26px;padding:0 10px;border-radius:5px;color:#fff;font:500 .74rem var(--body);font-style:normal;white-space:nowrap;overflow:hidden}
+.tw i.g-care{background:#16917f}.tw i.g-you{background:#7c63e6}.tw i.g-doc{background:#3b7fe6}.tw i.g-ven{background:#c7861f}.tw i.g-sw{background:#6b817c}
+.tw i.plan{background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.2) 0 6px,transparent 6px 12px)}
+.tw i.drop{animation:drop .45s cubic-bezier(.3,1.5,.5,1)}
+@keyframes drop{from{transform:translateY(-26px);opacity:0}}
+.mstats{display:flex;gap:24px;flex-wrap:wrap}
+.mstats div{display:grid;gap:3px}
+.mstats b{font:400 1.9rem/1 var(--display);color:#fff;font-variant-numeric:tabular-nums}
+.mstats span{font-size:.74rem;color:#86a39d}
+.pty-h{font-size:.8rem;color:#a9bfba;display:flex;justify-content:space-between}
+.pty{display:flex;flex-wrap:wrap;gap:6px}
+.pty span{font:500 .74rem var(--body);padding:6px 10px;border-radius:999px;border:1px solid #2a4c47;color:#6f8c86;transition:background .3s,color .3s,border-color .3s}
+.pty span.on{background:var(--mint-2);border-color:var(--mint-2);color:var(--ink)}
+@media (max-width:980px){.bk{grid-template-columns:minmax(0,1fr)}.mine{position:static;order:-1}.tw{flex-direction:row;flex-wrap:wrap-reverse;min-height:0}.tw i{height:24px}}
+@media (max-width:620px){.bricks{grid-template-columns:repeat(2,minmax(0,1fr))}.brick{padding:12px 11px 10px}.brick b{font-size:.88rem}}
+
+/* trust */
+.trust{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:start}
+.redact{background:var(--white);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:26px;display:grid;gap:16px}
+.redact .lbl{font:500 .76rem var(--body);color:var(--ink3);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.redact p{font:400 1.02rem/1.75 var(--body)}
+.redact .tok{display:inline-block;border-radius:6px;padding:0 5px;background:var(--mist);color:var(--teal);font:500 .9em var(--mono)}
+.redact .tok.raw{background:var(--blue-soft);color:var(--blue);font-family:var(--body);font-size:1em}
+.tg{display:flex;gap:6px;background:var(--mist);border-radius:999px;padding:4px;width:max-content}
+.tg button{border:0;background:transparent;padding:7px 14px;border-radius:999px;font-size:.84rem;color:var(--ink2)}
+.tg button[aria-pressed="true"]{background:var(--white);color:var(--ink);box-shadow:0 1px 3px rgba(15,36,33,.12)}
+.points{display:grid;gap:26px}
+.pt{display:grid;grid-template-columns:40px minmax(0,1fr);gap:16px}
+.pt .ic{width:40px;height:40px;border-radius:12px;background:var(--mint);color:var(--teal);display:grid;place-items:center}
+.pt .ic svg{width:20px;height:20px}
+.pt p{color:var(--ink2);font-size:.98rem;margin-top:4px}
+@media (max-width:900px){.trust{grid-template-columns:minmax(0,1fr)}}
+
+/* status */
+.road{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.rc{background:var(--white);border:1px solid var(--line);border-radius:22px;padding:26px;display:grid;gap:14px;align-content:start}
+.rc .when{font:500 .74rem var(--mono);color:var(--teal);display:flex;align-items:center;gap:8px}
+.rc .when i{width:8px;height:8px;border-radius:50%;background:currentColor}
+.rc.next .when{color:var(--blue)}
+.rc.later .when{color:var(--ven)}
+.rc h3{font:400 1.55rem/1.1 var(--display);letter-spacing:-.015em}
+.rc ul{margin:0;padding:0;list-style:none;display:grid;gap:9px;font-size:.94rem;color:var(--ink2)}
+.rc li{position:relative;padding-left:16px}
+.rc li::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--line2)}
+.rc li small{color:var(--ink3);font-size:.84em}
+@media (max-width:900px){.road{grid-template-columns:minmax(0,1fr)}}
+
+/* origin + cta */
+.origin{display:grid;grid-template-columns:minmax(0,1fr);max-width:900px;gap:56px;align-items:end;border-top:1px solid var(--line2);padding-top:56px;margin-top:clamp(72px,10vw,120px)}
+.origin blockquote{margin:0;font:400 clamp(1.7rem,3vw,2.5rem)/1.2 var(--display);letter-spacing:-.02em;text-wrap:balance}
+.origin blockquote em{color:var(--teal)}
+.origin .by{display:grid;gap:6px;color:var(--ink2);font-size:.98rem}
+.origin .by b{color:var(--ink);font-weight:600}
+@media (max-width:860px){.origin{grid-template-columns:minmax(0,1fr);gap:28px}}
+.cta{padding-block:0 clamp(72px,9vw,120px)}
+.cta-box{position:relative;overflow:hidden;border-radius:32px;background:linear-gradient(135deg,var(--teal),#08463f);color:#fff;padding:clamp(36px,7vw,88px);display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:40px;align-items:end}
+.cta-box::after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;border:1px solid rgba(255,255,255,.14);box-shadow:0 0 0 60px rgba(255,255,255,.03),0 0 0 120px rgba(255,255,255,.02)}
+.cta-box h2{color:#fff}
+.cta-box h2 em{color:var(--mint-2)}
+.cta-box p{color:#cfe4de;font-size:1.1rem;margin-top:18px;max-width:32em}
+.cta-box .side{display:grid;gap:14px;position:relative;z-index:1}
+.cta-box .btn.pri{background:#fff;color:var(--ink);justify-self:start}
+.cta-box .btn.pri:hover{background:var(--mint)}
+.cta-box ul{margin:0;padding:0;list-style:none;display:grid;gap:8px;color:#cfe4de;font-size:.95rem}
+.cta-box li{display:flex;gap:10px}
+.cta-box li::before{content:"✓";color:var(--mint-2)}
+@media (max-width:860px){.cta-box{grid-template-columns:minmax(0,1fr)}}
+footer{padding-block:32px;border-top:1px solid var(--line);color:var(--ink3);font-size:.88rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between}
+
+.rise{transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.rise.pre{transform:translateY(18px)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-check" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.4-3 8.2-7 9.5-4-1.3-7-5.1-7-9.5V6l7-3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-mask" viewBox="0 0 24 24"><rect x="3.5" y="6" width="17" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M7 12h3M14 12h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M5 20c1.2-3.6 3.8-5.5 7-5.5s5.8 1.9 7 5.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+  <symbol id="i-server" viewBox="0 0 24 24"><rect x="4" y="4.5" width="16" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="4" y="13.5" width="16" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="8" cy="7.5" r="1" fill="currentColor"/><circle cx="8" cy="16.5" r="1" fill="currentColor"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 4l9 16H3l9-16z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 10v4M12 17v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-pill" viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(-35 12 12)" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9.5 8.5l5 7" stroke="currentColor" stroke-width="1.8"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12l16-7-6 16-3-6-7-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+</svg>
+
+<header class="nav" id="nav"><div class="wrap">
+  <a class="logo" href="#top"><span class="w">W</span>Werley</a>
+  <nav aria-label="Seiten"><a href="#netz">Netz</a><a href="#zugang">Zugänge</a><a href="#doku">Doku</a><a href="#fall">Ein Fall</a><a href="#baukasten">Baukasten</a><a href="#vertrauen">Datenschutz</a></nav>
+  <a class="btn pri" href="#pilot">Pilot anfragen</a>
+</div></header>
+
+<main id="top">
+<section class="hero"><div class="wrap">
+  <div class="hero-top">
+    <div class="t">
+      <span class="kicker">Der Pflege-Agent</span>
+      <h1>Werley verbindet alle, die einen Menschen <em>pflegen.</em></h1>
+    </div>
+    <div class="hero-side">
+      <p class="lede">Ein Agent zwischen Pflegekraft, Patientin, Hausarzt, Apotheke und Lieferant. Werley nimmt jede Information auf, bringt sie in der richtigen Form zum Richtigen und bleibt dran, bis die Aufgabe erledigt ist.</p>
+      <div class="cta-row"><a class="btn pri" href="#pilot">Pilot anfragen <span class="arr">→</span></a><a class="btn sec" href="#doku">So fließt die Doku</a></div>
+    </div>
+  </div>
+
+  <div id="netz">
+    <div class="net" id="net" role="img" aria-label="Animation: Werley in der Mitte. Pflegekraft, Patientin, Team, Ärzte, Apotheke, Lieferanten und Familie docken nacheinander an, Nachrichten laufen über Werley zum richtigen Empfänger.">
+      <svg id="links" aria-hidden="true"></svg>
+      <div class="wact" id="wact"></div>
+      <div class="orb" id="orb"><span class="scan"></span><span class="w">W</span></div>
+      <div class="orb-l"><b>Werley</b><span>prüft · leitet weiter · erinnert</span></div>
+      <div class="plate" id="plate"><b>Ihre Pflegesoftware</b><span class="chips"><span>MediFox</span><span>Vivendi</span><span>SNAP</span><span>FHIR R4</span><span>PDF</span></span></div>
+    </div>
+    <div class="phases" id="phases" role="group" aria-label="Schritte der Animation"></div>
+    <div class="cap">
+      <div class="l">
+        <p id="capT" aria-live="polite">&nbsp;</p>
+        <div class="legend"><span class="g-care"><i></i>Pflege</span><span class="g-you"><i></i>Patientin &amp; Familie</span><span class="g-doc"><i></i>Ärzte, Therapie, Klinik</span><span class="g-ven"><i></i>Apotheke &amp; Lieferanten</span><span class="g-sw"><i></i>Software</span><span>Alle Namen fiktiv</span></div>
+      </div>
+      <div class="ctr"><div><b id="cJoin">0</b><span>Beteiligte</span></div><div><b id="cMsg">0</b><span>Nachrichten</span></div><div class="zero"><b>0</b><span>verloren</span></div></div>
+    </div>
+  </div>
+</div></section>
+
+<section id="luecke" style="padding-top:clamp(40px,6vw,80px)"><div class="wrap">
+  <div class="head rise"><span class="kicker">Das Problem</span><h2>Die Lücke liegt <em>zwischen</em> den Stellen.</h2>
+    <p class="lede">Eine Medikamentenänderung geht durch Praxis, Fax, Büro und Telefon, bevor sie bei der Pflegekraft ankommt. An jeder Station geht etwas verloren. Dieser Schwund kostet mehr als das Tippen.</p></div>
+  <div class="lanes" id="lanes">
+    <div class="lane old" id="laneOld"><div class="lane-h"><b>Heute: stille Post</b><span class="res">1 von 3 richtig · 18 Std.</span></div><div class="track"></div><div class="msg"></div></div>
+    <div class="lane new" id="laneNew"><div class="lane-h"><b>Mit Werley: eine Nachricht, alle Empfänger</b><span class="res">3 von 3 richtig · 0 Anrufe</span></div><div class="track"></div><div class="msg"></div></div>
+  </div>
+  <p class="illu">Illustration mit fiktiven Daten. Die Zahlen darunter sind gemessen.</p>
+  <div class="proof-grid">
+    <div class="rise"><div class="num" data-to="92">92<small>%</small></div><p>Abstimmung zwischen Hausarztpraxen und Pflegeheimen läuft per Fax, 87 % per Telefon. Digitale Wege: unter 10 %.</p><span class="src">Kroeber et al., Gesundheitswesen 2021</span></div>
+    <div class="rise"><div class="num" data-to="52">52<small>%</small></div><p>der Aufnahmen ins Pflegeheim: Entlassbrief und Überleitungsbogen widersprechen sich bei der Medikation.</p><span class="src">Tjia et al., J Gen Intern Med 2009 (USA)</span></div>
+    <div class="rise"><div class="num" data-to="109">109<small>Min.</small></div><p>pro Schicht dokumentieren Pflegekräfte im Krankenhaus. Gemessen, nicht geschätzt.</p><span class="src">Fraunhofer IML, Whitepaper Pflegedokumentation</span></div>
+  </div>
+</div></section>
+
+<section id="zugang" style="padding-top:0"><div class="wrap">
+  <div class="head rise"><span class="kicker">Ein Agent, drei Zugänge</span><h2>Jeder arbeitet dort, wo er <em>schon ist.</em></h2>
+    <p class="lede">Werley ist ein Agent mit drei Oberflächen. Pflegekräfte sprechen mit ihm. Patienten und Familie tippen. Praxen, Apotheken und Lieferanten antworten mit einem Klick.</p></div>
+  <div class="prods">
+    <article class="prod g-care rise">
+      <div class="dev"><div class="tab" id="tab">
+        <div class="tb-head"><div class="av2">HB</div><div class="tb-who"><div class="tb-name">Helga Brandt, 82</div><div class="tb-meta">Pflegegrad 3 · Herzinsuffizienz</div></div><span class="pill">Penicillin-Allergie</span></div>
+        <div class="voice"><div class="lbl"><i></i>Werley hört zu</div><canvas id="wave" aria-hidden="true"></canvas><div class="say" id="say">&nbsp;</div></div>
+        <div class="rows" id="trows"></div>
+        <div class="tal-w"><div class="tal" id="tal"><span class="ic"><svg id="talIc"><use href="#i-warn"/></svg></span><div><b id="talT"></b><span id="talS"></span></div></div></div>
+      </div></div>
+      <div class="ptxt"><div class="pname">Werley <em>Nursing</em></div><span class="pfor">Für Pflegekräfte und Teams</span>
+        <p>Beim Besuch sprechen statt danach tippen. Werley füllt die Doku, prüft mit und verteilt sie nach der Freigabe.</p>
+        <ul class="gain"><li>Doku entsteht während des Besuchs</li><li>Hinweise nur, wenn es wichtig ist</li><li>Übergabe ohne Nachtrag</li></ul>
+        <span class="tag built">Prototyp läuft</span></div>
+    </article>
+    <article class="prod g-you rise">
+      <div class="dev"><div class="phone" id="phone">
+        <div class="y-hi"><span>Werley You</span><b>Guten Abend, Frau Brandt</b></div>
+        <div class="y-next"><span>Nächster Besuch</span><b>Morgen 09:00 · A. Keller</b></div>
+        <div class="y-form" id="yForm">
+          <div class="y-q">Wie stark sind Ihre Schmerzen?</div>
+          <div class="y-val"><b id="painN">6</b><span id="painL">stark</span></div>
+          <input type="range" id="pain" min="0" max="10" value="6" aria-label="Schmerzstärke von 0 bis 10">
+          <div class="y-q sm">Wo?</div>
+          <div class="loc" id="loc"><button type="button" aria-pressed="true">Ferse</button><button type="button" aria-pressed="false">Rücken</button><button type="button" aria-pressed="false">Bauch</button></div>
+          <button type="button" class="y-send" id="ySend">An die Pflege senden</button>
+        </div>
+        <div class="y-sent" id="ySent" hidden>
+          <div class="y-msg" id="ySentT"></div>
+          <div class="y-st" id="yS1">✓ Gesendet an A. Keller · 22:10</div>
+          <div class="y-st" id="yS2">✓ Gelesen vom Nachtdienst · 22:11</div>
+          <div class="y-st" id="yS3">✓ M. Yilmaz kommt um 22:40</div>
+          <button type="button" class="y-again" id="yAgain">Neue Meldung</button>
+        </div>
+      </div></div>
+      <div class="ptxt"><div class="pname">Werley <em>You</em></div><span class="pfor">Für Patienten und Familie</span>
+        <p>Frau Brandt meldet Schmerzen, bestätigt Lieferungen und sieht, wann die Pflege kommt. Die Familie liest mit, soweit sie darf. Probieren Sie es aus.</p>
+        <ul class="gain"><li>Melden mit drei Tipps</li><li>Große Schrift, einfache Sprache</li><li>Familie nur mit Einwilligung</li></ul>
+        <span class="tag plan">Geplant · Angehörigen-Seite läuft schon (nur lesen)</span></div>
+    </article>
+    <article class="prod g-doc rise">
+      <div class="dev"><div class="inbox" id="inbox">
+        <div class="ib-top"><b>Werley Connect</b><span>Praxis Dr. Weber</span><span class="badge" id="ibBadge">1 offen</span></div>
+        <div class="ib-body">
+          <div class="ib-h"><span class="av">AK</span><div><b>Gewicht +2,1 kg in 3 Tagen</b><span>Pflegedienst · A. Keller · 09:17</span></div></div>
+          <div class="ib-pt">Helga Brandt, 82 · Herzinsuffizienz NYHA III</div>
+          <div class="sbar"><div><b>S</b>+2,1 kg seit Montag, leicht kurzatmig</div><div><b>B</b>NYHA III, Penicillin-Allergie</div><div><b>A</b>RR 142/85 · Puls 78 · Amoxicillin neu</div><div><b>R</b>Diuretikum anpassen?</div></div>
+          <div class="due"><span>Frist 14:00</span><span id="ibLeft">noch 38:00</span><div class="bar"><i id="ibBar"></i></div></div>
+          <div class="ib-act" id="ibAct"><button type="button" data-a="ok">Bestätigen</button><button type="button" data-a="edit" class="pri">Ändern</button><button type="button" data-a="call">Rückruf</button></div>
+          <div class="ib-edit" id="ibEdit" hidden>
+            <div class="erow"><span>Torasemid</span><div class="seg" id="ibSeg"><button type="button" aria-pressed="false">10 mg</button><button type="button" aria-pressed="true">20 mg</button></div></div>
+            <label class="erow"><span>Amoxicillin absetzen</span><input type="checkbox" id="ibAmox" checked></label>
+            <button type="button" class="send" id="ibSend">Antwort senden</button>
+          </div>
+          <div class="ib-done" id="ibDone" hidden></div>
+        </div>
+      </div></div>
+      <div class="ptxt"><div class="pname">Werley <em>Connect</em></div><span class="pfor">Für Ärzte, Therapie, Apotheken, Lieferanten</span>
+        <p>Anfragen kommen strukturiert und mit Frist. Eine Antwort mit einem Klick, und Werley verteilt sie an alle, die sie brauchen. Probieren Sie es aus.</p>
+        <ul class="gain"><li>SBAR statt Fax</li><li>Frist und Erinnerung eingebaut</li><li>E-Rezept und Bestellung folgen aus der Antwort</li></ul>
+        <span class="tag part">Anfrage mit Frist im Prototyp · Portal geplant</span></div>
+    </article>
+  </div>
+  <div class="swband rise">
+    <div class="t"><span class="kicker">Für Software-Hersteller</span><h3>Werley ersetzt Ihre Pflegesoftware nicht. Es füllt sie.</h3>
+      <p>Freigegebene Doku geht als Standardformat in Ihr System. Die Hersteller-Schnittstellen bestätigen wir im Pilot gemeinsam mit Ihnen.</p></div>
+    <div class="chips"><span>MediFox DAN</span><span>Vivendi</span><span>SNAP</span><span>DMRZ</span><span>KIS · HL7 v2.5</span><span>FHIR R4</span><span>ISiK</span><span>CSV</span><span>PDF</span></div>
+  </div>
+</div></section>
+
+<section id="doku"><div class="wrap">
+  <div class="head rise"><span class="kicker">Dokumentationsfluss</span><h2>Einmal gesagt. <em>Überall richtig</em> angekommen.</h2>
+    <p class="lede">Aus einem Besuch macht Werley sechs Dokumente. Jeder Empfänger bekommt seinen Teil, in seinem Format, und nur das, was er sehen darf. Nichts geht raus ohne Freigabe.</p></div>
+  <div class="flow rise" id="flow">
+    <svg class="flsvg" id="flsvg" aria-hidden="true"></svg>
+    <div class="fsrc">
+      <div class="hd">Besuch · Helga Brandt<span>24.11. · 09:14</span></div>
+      <div class="quote"><small>A. Keller spricht</small>„Blutdruck 142 zu 85, Gewicht 71,4. Verband an der Ferse gewechselt, zwei mal eineinhalb.“</div>
+      <div class="flds">
+        <div><span>Vitalwerte</span><b>142/85 · Puls 78</b></div>
+        <div><span>Gewicht</span><b style="color:var(--amber)">71,4 kg ↑</b></div>
+        <div><span>Wunde</span><b>Kat. 2 · 2 × 1,5 cm</b></div>
+        <div><span>Trinkmenge</span><b>400 ml</b></div>
+        <div><span>Medikation</span><b style="color:var(--coral)">Amoxicillin: Allergie</b></div>
+      </div>
+    </div>
+    <div class="fgate"><button type="button" class="gbtn" id="gbtn"><svg><use href="#i-shield"/></svg><span id="gTxt">Freigeben</span></button><small id="gSub">A. Keller prüft</small></div>
+    <div class="fdest" id="fdest"></div>
+  </div>
+  <div class="payload rise" id="payload"></div>
+  <div class="replay"><button type="button" id="fReset">Nochmal von vorn</button></div>
+</div></section>
+
+<section id="fall" style="padding-top:0"><div class="wrap">
+  <div class="head rise"><span class="kicker">Ein Fall</span><h2>Ein Fall. Fünf Beteiligte. <em>Kein Anruf.</em></h2>
+    <p class="lede">Montagabend meldet Frau Brandt Schmerzen. Dienstagnachmittag ist das neue Medikament geliefert. Dazwischen arbeitet Werley. Scrollen Sie durch den Fall.</p></div>
+  <div class="swwrap">
+    <div class="stamp" id="stamp">Offene Schleifen: 0</div>
+    <div class="swleg" id="swleg"></div>
+    <div class="sw" id="sw"><svg id="swsvg" aria-hidden="true"></svg></div>
+  </div>
+</div></section>
+
+<section id="baukasten"><div class="wrap">
+  <div class="head rise"><span class="kicker">Baukasten</span><h2>Bausteine statt <em>Monolith.</em></h2>
+    <p class="lede">Werley wächst mit dem Netz. Jeder Baustein verbindet eine weitere Stelle und schließt dort eine Schleife. Stellen Sie Ihr Werley zusammen.</p></div>
+  <div class="bk">
+    <div><div class="presets" id="presets"><span>Vorlage:</span></div><div class="bricks" id="bricks"></div></div>
+    <aside class="mine" aria-live="polite">
+      <h3>Ihr Werley</h3>
+      <div class="tw" id="tower"></div>
+      <div class="mstats"><div><b id="bkN">0</b><span>Bausteine</span></div><div><b id="bkB">0</b><span>gebaut</span></div><div><b id="bkP">0</b><span>geplant</span></div></div>
+      <div class="pty-h"><span>Verbunden</span><span id="bkC"></span></div>
+      <div class="pty" id="pty"></div>
+    </aside>
+  </div>
+</div></section>
+
+<section id="vertrauen"><div class="wrap">
+  <div class="head rise"><span class="kicker">Datenschutz</span><h2>Die KI erfährt <em>keine Namen.</em></h2>
+    <p class="lede">Bevor ein Satz das Gerät verlässt, ersetzt Werley Personen, Adressen und Nummern durch Platzhalter. Und jeder Empfänger sieht nur seinen Teil.</p></div>
+  <div class="trust">
+    <div class="redact rise">
+      <div class="lbl"><span>Was die KI sieht</span><div class="tg" role="group" aria-label="Ansicht"><button type="button" id="tgRaw" aria-pressed="false">Gesagt</button><button type="button" id="tgPs" aria-pressed="true">An die KI</button></div></div>
+      <p id="redact"></p>
+    </div>
+    <div class="points">
+      <div class="pt rise"><span class="ic"><svg><use href="#i-user"/></svg></span><div><h3>Die Pflegekraft entscheidet</h3><p>Jedes Feld zeigt seine Quelle. Korrekturen sind gesperrt. Ohne Freigabe geht nichts raus.</p></div></div>
+      <div class="pt rise"><span class="ic"><svg><use href="#i-eye"/></svg></span><div><h3>Jeder sieht nur seinen Teil</h3><p>Die Familie liest Grundpflege und Termine, keine Diagnosen. Die Apotheke sieht die Medikation, nicht die Pflegedoku.</p></div></div>
+      <div class="pt rise"><span class="ic"><svg><use href="#i-server"/></svg></span><div><h3>Auch ohne Cloud-KI möglich</h3><p>Ein lokales Sprachmodell ist eingebaut und getestet. Es ist heute noch langsamer als das Cloud-Modell.</p></div></div>
+      <div class="pt rise"><span class="ic"><svg><use href="#i-shield"/></svg></span><div><h3>Dokumentation, keine Diagnose</h3><p>Werley schreibt, prüft gegen Regeln und informiert. Diagnose und Therapie bleiben bei Arzt und Pflege.</p></div></div>
+    </div>
+  </div>
+</div></section>
+
+<section id="stand" style="padding-top:0"><div class="wrap">
+  <div class="head rise"><span class="kicker">Stand</span><h2>Was heute läuft. <em>Was als Nächstes kommt.</em></h2></div>
+  <div class="road">
+    <div class="rc rise"><span class="when"><i></i>Heute · Prototyp</span><h3>Werley Nursing</h3>
+      <ul><li>Sprach-Doku mit Freigabe, 9 Pflichtthemen</li><li>Prüfungen: Allergie, Dosis, Trends, Braden</li><li>SBAR-Übergabe aus der Doku</li><li>Arztanfrage mit Frist und Erinnerung <small>(KIM im Demo-Modus)</small></li><li>Rezept-Reichweite, Überleitung mit Medikationsabgleich, Notfall-Akte</li><li>Angehörigen-Seite, nur lesen</li><li>Export: FHIR R4, HL7 v2.5, CSV, PDF</li><li>Lokale KI als Option</li></ul></div>
+    <div class="rc next rise"><span class="when"><i></i>Als Nächstes · Pilot</span><h3>Ein echtes Netz</h3>
+      <ul><li>Ein Pflegedienst oder eine Station, mit Hausarztpraxis und Apotheke</li><li>Werley You als Beta</li><li>Zeitmessung im Alltag: Besuch bis Freigabe</li><li>Echte KIM- und E-Rezept-Anbindung über die TI</li><li>Hersteller-Schnittstellen bestätigen</li></ul></div>
+    <div class="rc later rise"><span class="when"><i></i>Danach · Netz</span><h3>Alle an einem Tisch</h3>
+      <ul><li>Werley Connect für Praxen, Apotheken, Therapie</li><li>Homecare und Hilfsmittel: Bestellung aus dem Wundplan</li><li>Therapie im Pflegeplan</li><li>Weitere Software-Partner</li></ul></div>
+  </div>
+  <div class="origin" id="herkunft">
+    <blockquote class="rise">Werley entsteht dort, wo die Lücken wehtun: <em>in der Pflegeausbildung,</em> zwischen Fax, Telefon und Nachtrag.</blockquote>  </div>
+</div></section>
+
+<div class="cta" id="pilot"><div class="wrap">
+  <div class="cta-box rise">
+    <div><h2>Ein Netz für den <em>ersten Pilot.</em></h2><p>Wir suchen einen Pflegedienst oder eine Station, gern zusammen mit Hausarztpraxis und Apotheke. Sie bekommen Werley, wir bekommen ehrliches Feedback aus dem Alltag.</p></div>
+    <div class="side">
+      <ul><li>Läuft auf Tablet, Laptop und Handy</li><li>Echte Zeitmessung, Besuch bis Freigabe</li><li>Ihr Feedback bestimmt die nächsten Bausteine</li></ul>    </div>
+  </div>
+</div></div>
+</main>
+
+<footer><div class="wrap"><span>© 2026 Werley Nursing</span><span>Alle gezeigten Namen und Patientendaten sind fiktiv.</span></div></footer>
+
+<script>
+(()=>{
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const CHECK = '<svg><use href="#i-check"/></svg>';
+const NS = 'http://www.w3.org/2000/svg';
+const sv = (tag, at) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); return e; };
+
+/* visibility gates: loops pause while their element is off screen */
+const GATES = [];
+function gate(el, th = 0, first){
+  const g = {on:false, seen:false, q:[]}; GATES.push(g);
+  new IntersectionObserver(es => { g.on = es[0].isIntersecting;
+    if (g.on){ if (!g.seen){ g.seen = true; first && first(); } if (!document.hidden) g.q.splice(0).forEach(r => r()); } }, {threshold:th}).observe(el);
+  g.wait = () => (g.on && !document.hidden) ? Promise.resolve() : new Promise(r => g.q.push(r));
+  return g;
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) GATES.forEach(g => g.on && g.q.splice(0).forEach(r => r())); });
+
+/* nav */
+const nav = $('#nav'); const onScroll = () => nav.classList.toggle('solid', scrollY > 8); addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+/* ================= network ================= */
+const NET = $('#net'), LINKS = $('#links'), ORB = $('#orb'), WACT = $('#wact');
+const N = {
+  keller:  {g:'care', ini:'AK', nm:'A. Keller', role:'Pflegefachkraft · Früh', app:'Nursing', st:'Besuch 09:14', gh:'Pflegekraft', x:12, y:45, mx:25, my:31},
+  helga:   {g:'you', ini:'HB', nm:'Helga Brandt, 82', role:'Patientin · zu Hause', app:'You', st:'verbunden', gh:'Patientin', x:88, y:45, mx:75, my:31},
+  yilmaz:  {g:'care', ini:'MY', nm:'M. Yilmaz', role:'Pflege · Nachtdienst', app:'Nursing', st:'Dienst ab 21:30', gh:'Nachtdienst', x:13, y:13, mx:25, my:6.6},
+  kraus:   {g:'care', ini:'SK', nm:'S. Kraus', role:'Wundexpertin', app:'Nursing', st:'Wundplan', gh:'Wundexpertin', x:13, y:77, mx:75, my:6.6},
+  weber:   {g:'doc', ini:'DW', nm:'Dr. Weber', role:'Hausarztpraxis', app:'Connect', st:'verbunden', gh:'Hausarzt', x:37, y:11, mx:25, my:18.8},
+  physio:  {g:'doc', ini:'TL', nm:'T. Lange', role:'Physiotherapie', app:'Connect', st:'Termin Do 11:00', gh:'Therapie', x:63, y:11, mx:75, my:18.8},
+  klinik:  {g:'doc', ini:'KN', nm:'Klinikum Nord', role:'Kardiologie', app:'Connect', st:'Überleitung bereit', gh:'Klinik', x:87, y:13, mx:25, my:65},
+  homecare:{g:'ven', ini:'HO', nm:'Homecare Ost', role:'Wundversorgung', app:'Connect', st:'verbunden', gh:'Homecare', x:37, y:79, mx:25, my:77.2},
+  apotheke:{g:'ven', ini:'LA', nm:'Linden-Apotheke', role:'E-Rezept · Lieferung', app:'Connect', st:'verbunden', gh:'Apotheke', x:63, y:79, mx:75, my:77.2},
+  petra:   {g:'you', ini:'PB', nm:'Petra Brandt', role:'Tochter · Vollmacht', app:'You', st:'verbunden', gh:'Familie', x:87, y:77, mx:75, my:65}
+};
+const gBase = LINKS.appendChild(sv('g', {})), gLive = LINKS.appendChild(sv('g', {}));
+for (const n of Object.values(N)){
+  const el = document.createElement('div'); el.className = `node g-${n.g}`;
+  el.style.cssText = `--x:${n.x}%;--y:${n.y}%;--mx:${n.mx}%;--my:${n.my}%`;
+  el.innerHTML = `<span class="ghost">+ ${n.gh}</span><div class="nc"><span class="app">${n.app}</span><span class="av">${n.ini}</span><b>${n.nm}</b><span class="role">${n.role}</span><span class="st">${n.st}</span></div>`;
+  NET.append(el); n.el = el; n.stEl = $('.st', el); n.st0 = n.st; n.joined = false;
+  n.base = gBase.appendChild(sv('path', {class:'spk-base'})); n.live = gLive.appendChild(sv('path', {class:`spk g-${n.g}`}));
+}
+N.plate = {g:'sw', el:$('#plate'), plate:true, joined:true};
+N.plate.base = gBase.appendChild(sv('path', {class:'spk-base'})); N.plate.live = gLive.appendChild(sv('path', {class:'spk g-sw'}));
+
+let G = {W:1, H:1, ox:0, oy:0};
+function geo(){
+  const r = NET.getBoundingClientRect(), o = ORB.getBoundingClientRect();
+  G = {W:r.width, H:r.height, ox:o.left - r.left + o.width/2, oy:o.top - r.top + o.height/2};
+  LINKS.setAttribute('viewBox', `0 0 ${G.W} ${G.H}`);
+  for (const n of Object.values(N)){
+    const b = n.el.getBoundingClientRect();
+    const x = b.left - r.left + b.width/2, y = n.plate ? b.top - r.top : b.top - r.top + b.height/2;
+    const dx = G.ox - x, dy = G.oy - y, k = n.plate ? 0 : .14;
+    n.p = {x, y, cx:(x + G.ox)/2 - dy*k, cy:(y + G.oy)/2 + dx*k};
+    const d = `M${x.toFixed(1)} ${y.toFixed(1)} Q${n.p.cx.toFixed(1)} ${n.p.cy.toFixed(1)} ${G.ox.toFixed(1)} ${G.oy.toFixed(1)}`;
+    n.base.setAttribute('d', d); n.live.setAttribute('d', d);
+    n.len = n.live.getTotalLength(); n.live.style.strokeDasharray = n.len; n.live.style.strokeDashoffset = n.joined ? 0 : n.len;
+  }
+}
+geo();
+new ResizeObserver(geo).observe(NET);
+document.fonts && document.fonts.ready.then(geo);
+
+let run = 0, msgs = 0, wT;
+const q = (n, t) => { const p = n.p, u = 1 - t; return [u*u*p.x + 2*u*t*p.cx + t*t*G.ox, u*u*p.y + 2*u*t*p.cy + t*t*G.oy]; };
+const ease = p => p < .5 ? 2*p*p : 1 - (-2*p + 2)**2/2;
+function counts(){ $('#cJoin').textContent = Object.values(N).filter(n => !n.plate && n.joined).length; $('#cMsg').textContent = msgs; }
+function mkPk(g, text){ const el = document.createElement('div'); el.className = `pk g-${g}`; el.innerHTML = '<i></i><span></span>'; el.lastChild.textContent = text; NET.append(el); el._w = el.lastChild.offsetWidth; return el; }
+function place(el, x, y){ el.style.transform = `translate(${x}px,${y}px)`; const w = el._w, dx = Math.max(8 - x, Math.min(G.W - 8 - x - w, -w/2)); el.lastChild.style.transform = `translateX(${dx}px)`; }
+function move(el, pos, dur, id){
+  return new Promise(res => { const t0 = performance.now();
+    const f = now => { if (id !== run) return res(); const p = Math.min(1, (now - t0)/dur), [x, y] = pos(ease(p)); place(el, x, y); p < 1 ? requestAnimationFrame(f) : res(); };
+    f(t0); });
+}
+async function step(id, ms){ await wait(ms); if (id !== run) throw 0; }
+function think(text){ ORB.classList.add('busy'); WACT.textContent = text; WACT.classList.add('show'); clearTimeout(wT); wT = setTimeout(() => WACT.classList.remove('show'), 1900); }
+function arrive(n){ n.el.classList.remove('got'); void n.el.offsetWidth; n.el.classList.add('got'); setTimeout(() => n.el.classList.remove('got'), 1100); msgs++; counts(); }
+function status(id, text){ const n = N[id]; if (!n || !n.stEl) return; n.stEl.textContent = text; n.stEl.classList.add('fl'); setTimeout(() => n.stEl.classList.remove('fl'), 1800); }
+async function flow(f, id, sp = 1){
+  const A = N[f.from], tos = [].concat(f.to), outs = [].concat(f.b);
+  const pk = mkPk(A.g, f.a);
+  await move(pk, t => q(A, t), 1050*sp, id); pk.remove();
+  if (id !== run) throw 0;
+  think(f.w); await step(id, 760*sp); ORB.classList.remove('busy');
+  const ps = tos.map((t, i) => ({n:N[t], el:mkPk(N[t].g, outs[i] ?? outs[0])}));
+  await Promise.all(ps.map(p => move(p.el, t => q(p.n, 1 - t), 1050*sp, id)));
+  ps.forEach(p => p.el.remove());
+  if (id !== run) throw 0;
+  ps.forEach(p => arrive(p.n));
+  if (f.st) for (const k in f.st) status(k, f.st[k]);
+}
+function join(id, inst){
+  const n = N[id]; if (n.joined) return; n.joined = true;
+  if (inst){ n.el.classList.add('instant'); n.live.style.transition = 'none'; }
+  n.el.classList.add('in'); n.live.style.strokeDashoffset = 0; counts();
+  if (inst) requestAnimationFrame(() => requestAnimationFrame(() => { n.el.classList.remove('instant'); n.live.style.transition = ''; }));
+}
+function resetNet(){
+  $$('.pk', NET).forEach(p => p.remove()); msgs = 0;
+  for (const n of Object.values(N)){ if (n.plate) continue;
+    n.joined = false; n.el.classList.add('instant'); n.el.classList.remove('in', 'got'); n.stEl.textContent = n.st0; n.stEl.classList.remove('fl');
+    n.live.style.transition = 'none'; n.live.style.strokeDashoffset = n.len; }
+  requestAnimationFrame(() => requestAnimationFrame(() => { for (const n of Object.values(N)){ if (n.plate) continue; n.el.classList.remove('instant'); n.live.style.transition = ''; } }));
+  ORB.classList.remove('busy'); WACT.classList.remove('show'); counts();
+}
+const PH = [
+  {t:'Werley Nursing', c:'<span class="pre">Werley </span>Nursing', s:'Pflegekraft', d:'Die Pflegekraft spricht beim Besuch. Werley schreibt mit, prüft und fragt nach, was fehlt. Nach ihrer Freigabe landet die Doku in der Pflegesoftware.', join:['keller'], flows:[
+    {from:'keller', to:'keller', a:'„Blutdruck 142 zu 85 …“', w:'schreibt mit · prüft 9 Themen', b:'Fehlt noch: Ausscheidung', st:{keller:'8 von 9 Themen'}},
+    {from:'keller', to:'plate', a:'Besuch freigegeben', w:'Freigabe durch A. Keller', b:'Doku → MediFox', st:{keller:'Freigabe 09:31 ✓'}}]},
+  {t:'Werley You', c:'<span class="pre">Werley </span>You', s:'Patientin', d:'Frau Brandt meldet selbst, was sie spürt, und sieht, wann die Pflege kommt. Die Pflegekraft weiß es vor dem Besuch.', join:['helga'], flows:[
+    {from:'helga', to:'keller', a:'Schmerz 6/10 · Ferse', w:'Schmerz ↑ seit gestern', b:'Meldung von Frau Brandt', st:{keller:'Meldung: Schmerz 6/10'}},
+    {from:'keller', to:'helga', a:'Komme 10:30, Verband neu', w:'Termin in Werley You', b:'Besuch heute 10:30', st:{helga:'Besuch 10:30 ✓'}}]},
+  {t:'Das Team', c:'Team', s:'Nachtdienst, Wunde', d:'Nachtdienst und Wundexpertin bekommen dieselbe Doku, jede im eigenen Format. Niemand schreibt etwas zweimal.', join:['yilmaz', 'kraus'], flows:[
+    {from:'keller', to:['yilmaz', 'kraus'], a:'Doku freigegeben', w:'eine Doku · zwei Formate', b:['Übergabe als SBAR', 'Wundfoto · 2 × 1,5 cm'], st:{yilmaz:'Übergabe gelesen ✓', kraus:'Wundverlauf neu'}},
+    {from:'kraus', to:'keller', a:'Ab heute Hydrokolloid', w:'Wundplan aktualisiert', b:'Neuer Verband', st:{keller:'Wundplan neu ✓'}}]},
+  {t:'Ärzte und Partner', c:'Partner', s:'Arzt, Apotheke, Lieferant', sp:.85, d:'Hausarzt, Therapie, Klinik, Apotheke und Homecare docken an. Werley stellt Anfragen mit Frist und bleibt dran, bis jemand antwortet.', join:['weber', 'physio', 'klinik', 'apotheke', 'homecare'], flows:[
+    {from:'keller', to:'weber', a:'Gewicht +2,1 kg in 3 Tagen', w:'Trend erkannt · Frist 14:00', b:'Anfrage als SBAR', st:{weber:'Anfrage · Frist 14:00'}},
+    {from:'weber', to:['keller', 'apotheke'], a:'Torasemid 20 mg', w:'Medikationsplan · E-Rezept', b:['Plan aktualisiert', 'E-Rezept Torasemid'], st:{weber:'beantwortet 13:42 ✓', keller:'Antwort Dr. Weber ✓', apotheke:'Lieferung 16:30'}},
+    {from:'apotheke', to:'helga', a:'Lieferung 16:30', w:'Zeitfenster an Patientin', b:'Lieferung heute 16:30', st:{helga:'Lieferung 16:30'}},
+    {from:'kraus', to:'homecare', a:'Hydrokolloid 10 × 10', w:'Bestand reicht 2 Tage', b:'Bestellung · 10 Stück', st:{homecare:'Versand morgen'}}]},
+  {t:'Ein Netz', c:'Ein Netz', s:'Familie, alle', d:'Ein Besuch, eine Freigabe, und jeder Beteiligte hat, was er braucht. Werley verliert unterwegs nichts.', join:['petra'], flows:[
+    {from:'keller', to:['plate', 'yilmaz', 'weber', 'petra'], a:'Besuch freigegeben', w:'1 Freigabe · 4 Empfänger', b:['Doku → MediFox', 'Übergabe', 'Gewichtsverlauf', '„Mama geht es gut“'], st:{yilmaz:'Übergabe ✓', weber:'Verlauf erhalten', petra:'Update 09:32'}},
+    {from:'petra', to:'keller', a:'Frage: Arzttermin?', w:'an die zuständige Pflegekraft', b:'Frage von Petra B.', st:{keller:'1 Frage offen'}}]}
+];
+const AMB = [
+  {from:'helga', to:'keller', a:'Getrunken: 900 ml', w:'Trinkbilanz aktualisiert', b:'Selbstauskunft'},
+  {from:'physio', to:'keller', a:'Gehübung 2 × täglich', w:'in den Pflegeplan', b:'Plan ergänzt', st:{keller:'Pflegeplan ergänzt'}},
+  {from:'klinik', to:['keller', 'weber'], a:'Echo-Befund', w:'an Hausarzt und Akte', b:['Befund in der Akte', 'Befund'], st:{weber:'Befund erhalten', klinik:'gesendet ✓'}},
+  {from:'apotheke', to:'helga', a:'Lieferung zugestellt', w:'Bestand +20 Tabletten', b:'Lieferung da ✓', st:{helga:'Lieferung erhalten ✓'}},
+  {from:'yilmaz', to:['keller', 'plate'], a:'Nacht ruhig, Schmerz 2/10', w:'Übergabe an Frühdienst', b:['Übergabe', 'Nachtdoku']},
+  {from:'keller', to:'homecare', a:'Inkontinenzmaterial', w:'Bestand reicht 4 Tage', b:'Bestellung', st:{homecare:'Bestellung 2 Pck.'}},
+  {from:'weber', to:'keller', a:'Kontrolle morgen', w:'Termin in der Tour', b:'Termin Mi 09:00', st:{keller:'Kontrolle Mi 09:00'}},
+  {from:'petra', to:'keller', a:'Friseur am Donnerstag?', w:'an die Tourplanung', b:'Frage von Petra B.'}
+];
+$('#phases').innerHTML = PH.map((p, i) => `<button type="button" class="ph" data-i="${i}" aria-pressed="false"><span class="n">0${i+1}</span><b>${p.c}</b><span class="sub">${p.s}</span><i class="pb"></i></button>`).join('');
+const chips = $$('.ph');
+chips.forEach(b => b.onclick = () => play(+b.dataset.i));
+function marks(i, frac){
+  chips.forEach((b, j) => { b.classList.toggle('on', j === i); b.setAttribute('aria-pressed', j === i); $('.pb', b).style.width = j < i ? '100%' : j === i ? (frac*100) + '%' : '0'; });
+  $('#capT').innerHTML = `<b>${PH[i].t}.</b> ${PH[i].d}`;
+}
+function instant(i){
+  const P = PH[i]; P.join.forEach(j => join(j, true));
+  P.flows.forEach(f => { msgs += [].concat(f.to).length; if (f.st) for (const k in f.st) N[k].stEl.textContent = f.st[k]; });
+  counts();
+}
+const NG = gate(NET, .15);
+async function play(from){
+  const id = ++run; resetNet();
+  for (let i = 0; i < from; i++) instant(i);
+  marks(from, 0);
+  if (RM){ instant(from); marks(from, 1); return; }
+  try {
+    await step(id, 450);
+    for (let i = from; i < PH.length; i++){
+      const P = PH[i]; marks(i, 0);
+      for (const j of P.join){ join(j); await step(id, 240); }
+      await step(id, 650);
+      for (let k = 0; k < P.flows.length; k++){
+        await NG.wait(); if (id !== run) return;
+        await flow(P.flows[k], id, P.sp); marks(i, (k + 1)/P.flows.length); await step(id, 420);
+      }
+      await step(id, 1500);
+    }
+    $('#capT').innerHTML = '<b>Das Netz läuft.</b> Jede Meldung hat einen Empfänger und eine Frist. Werley hält jede Schleife offen, bis sie erledigt ist.';
+    for (let k = 0; ; k++){ await NG.wait(); if (id !== run) return; await flow(AMB[k % AMB.length], id, .8); await step(id, 700); }
+  } catch (e){ if (e !== 0) throw e; }
+}
+play(RM ? PH.length - 1 : 0);
+
+/* ================= the leak ================= */
+const ITEMS = ['Torasemid 20 mg', 'Amoxicillin absetzen', 'Kontrolle morgen'];
+const LN = [
+  {el:$('#laneOld'), st:['Praxis', 'Fax', 'Büro', 'Telefon', 'Pflegekraft'], steps:[
+    [['ok', 'ok', 'ok'], '13:42 · Praxis schreibt'], [['blur', 'ok', 'blur'], '14:05 · Fax, schlecht lesbar'], [['ok', 'lost', 'ok'], '15:20 · Büro tippt ab'],
+    [['wrong', 'lost', 'ok'], '16:10 · am Telefon weitergesagt'], [['wrong', 'lost', 'ok'], 'Mi 07:30 · Zettel im Dienstzimmer']]},
+  {el:$('#laneNew'), st:['Praxis', 'Werley', 'Pflege', 'Apotheke', 'Patientin'], steps:[
+    [['ok', 'ok', 'ok'], '13:42 · Antwort in Werley Connect'], [['ok', 'ok', 'ok'], '13:42 · geprüft und verteilt'], [['ok', 'ok', 'ok'], '13:43 · Medikationsplan neu'],
+    [['ok', 'ok', 'ok'], '13:44 · E-Rezept an die Apotheke'], [['ok', 'ok', 'ok'], '16:30 · Lieferung bestätigt']]}
+];
+for (const L of LN){
+  $('.track', L.el).innerHTML = '<i class="rail"></i><i class="fillr"></i>' + L.st.map((s, i) => `<div class="sta" style="--p:${i/(L.st.length - 1)}"><span class="d"></span><span class="l">${s}</span></div>`).join('') + '<i class="puck"></i>';
+  $('.msg', L.el).innerHTML = ITEMS.map(t => `<span class="it">${t}</span>`).join('') + '<span class="note"></span>';
+}
+function laneSet(L, i){
+  $$('.sta', L.el).forEach((s, j) => s.classList.toggle('on', j <= i));
+  L.el.style.setProperty('--pp', i/(L.st.length - 1));
+  const [states, note] = L.steps[i];
+  $$('.it', L.el).forEach((e, j) => { e.className = 'it ' + states[j]; e.textContent = states[j] === 'wrong' ? 'Torasemid 10 mg?' : ITEMS[j]; });
+  $('.note', L.el).textContent = note; $('.res', L.el).classList.toggle('show', i === L.st.length - 1);
+}
+LN.forEach(L => laneSet(L, 4));
+const LG = gate($('#lanes'), .35);
+if (!RM) (async () => { for (;;){
+  await LG.wait(); LN.forEach(L => laneSet(L, 0)); await wait(1500);
+  for (let i = 1; i < 5; i++){ await LG.wait(); LN.forEach(L => laneSet(L, i)); await wait(1600); }
+  await wait(5500);
+} })();
+
+/* ================= Werley Nursing tablet ================= */
+const TROWS = [['vital', 'Vitalwerte'], ['gewicht', 'Gewicht'], ['med', 'Medikamente'], ['haut', 'Wunde'], ['schmerz', 'Schmerz']];
+$('#trows').innerHTML = TROWS.map(([k, l]) => `<div class="row" id="r-${k}"><span class="ck">${CHECK}</span><span class="k">${l}</span><span class="v">–</span></div>`).join('');
+const TS = [
+  {say:'Blutdruck 142 zu 85, Puls 78.', row:'vital', v:'142/85 · 78'},
+  {say:'Gewicht heute 71,4 Kilo.', row:'gewicht', v:'71,4 kg ↑', cls:'warn', al:['amber', 'i-warn', 'Gewicht +2,1 kg in 3 Tagen', 'Bei Herzinsuffizienz: Dr. Weber fragen?']},
+  {say:'Ja, bitte Dr. Weber fragen.', al:['blue', 'i-send', 'Anfrage gesendet', 'Frist 14:00 · Werley bleibt dran']},
+  {say:'Neu ist Amoxicillin seit gestern.', row:'med', v:'Amoxicillin', cls:'bad', al:['coral', 'i-pill', 'Achtung: Penicillin-Allergie', 'Gabe aussetzen, Arzt ist informiert']},
+  {say:'Ferse rechts, 2 mal 1,5 Zentimeter.', row:'haut', v:'Kat. 2 · 2 × 1,5 cm'},
+  {say:'Schmerz drei von zehn.', row:'schmerz', v:'NRS 3/10'}
+];
+let speaking = false;
+function tReset(){ $$('#trows .row').forEach(r => { r.className = 'row'; $('.v', r).textContent = '–'; }); $('#tal').className = 'tal'; $('#say').innerHTML = '&nbsp;'; }
+function tAlert([c, ic, t, s]){ const el = $('#tal'); el.className = 'tal'; setTimeout(() => { el.className = `tal ${c} show`; $('#talIc').innerHTML = `<use href="#${ic}"/>`; $('#talT').textContent = t; $('#talS').textContent = s; }, RM ? 0 : 220); }
+function tStep(s){
+  if (s.row){ const r = $('#r-' + s.row); r.classList.add('on', 'flash'); if (s.cls) r.classList.add(s.cls); $('.v', r).textContent = s.v; setTimeout(() => r.classList.remove('flash'), 1100); }
+  if (s.al) tAlert(s.al);
+}
+async function typeSay(text){ const el = $('#say'); for (let i = 1; i <= text.length; i++){ el.textContent = '„' + text.slice(0, i); await wait(28); } el.textContent = '„' + text + '“'; }
+TS.forEach(tStep); $('#say').textContent = '„' + TS.at(-1).say + '“';
+const TG = gate($('#tab'), .3);
+if (!RM) (async () => { for (;;){
+  await TG.wait(); tReset(); await wait(800);
+  for (const s of TS){ await TG.wait(); speaking = true; await typeSay(s.say); speaking = false; await wait(450); tStep(s); await wait(s.al ? 2300 : 1000); }
+  await wait(4500);
+} })();
+const wv = $('#wave'), wx = wv.getContext('2d'); let amp = 0;
+function wsize(){ const r = wv.getBoundingClientRect(), d = devicePixelRatio || 1; wv.width = Math.max(1, r.width*d); wv.height = Math.max(1, r.height*d); }
+wsize(); new ResizeObserver(wsize).observe(wv);
+function wave(t){
+  if (TG.on){
+    const W = wv.width, H = wv.height, d = devicePixelRatio || 1, gap = 5*d, n = Math.floor(W/gap);
+    amp += ((speaking ? 1 : .08) - amp)*.1; wx.clearRect(0, 0, W, H); wx.fillStyle = '#0e7a6c';
+    for (let i = 0; i < n; i++){ const e = Math.sin(i/n*Math.PI), v = (Math.sin(i*.6 + t*.009)*.5 + Math.sin(i*1.9 - t*.014)*.3 + .2)*e, h = Math.max(2*d, Math.abs(v)*amp*H);
+      wx.globalAlpha = .35 + .65*e; wx.fillRect(i*gap, (H - h)/2, 2.2*d, h); }
+    wx.globalAlpha = 1;
+  }
+  if (!RM) requestAnimationFrame(wave);
+}
+requestAnimationFrame(wave);
+
+/* ================= Werley You phone ================= */
+const PL = ['keine', 'sehr leicht', 'leicht', 'leicht', 'mittel', 'mittel', 'stark', 'stark', 'sehr stark', 'sehr stark', 'unerträglich'];
+const pain = $('#pain');
+pain.oninput = () => { $('#painN').textContent = pain.value; $('#painL').textContent = PL[pain.value]; };
+$$('#loc button').forEach(b => b.onclick = () => b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true'));
+$('#ySend').onclick = async () => {
+  const locs = $$('#loc button[aria-pressed="true"]').map(b => b.textContent).join(', ') || 'ohne Ort';
+  $('#yForm').hidden = true; $('#ySent').hidden = false; $('#ySentT').textContent = `Schmerz ${pain.value}/10 · ${locs}`;
+  for (const s of ['#yS1', '#yS2', '#yS3']){ await wait(RM ? 0 : 850); $(s).classList.add('on'); }
+};
+$('#yAgain').onclick = () => { $$('.y-st').forEach(s => s.classList.remove('on')); $('#ySent').hidden = true; $('#yForm').hidden = false; };
+
+/* ================= Werley Connect inbox ================= */
+let left = 38*60, answered = false; const WINDOW = 283*60;
+function ibTick(){ const m = Math.floor(left/60), s = left % 60; $('#ibLeft').textContent = answered ? 'beantwortet' : `noch ${m}:${String(s).padStart(2, '0')}`; $('#ibBar').style.width = answered ? '0' : (left/WINDOW*100) + '%'; }
+const CG = gate($('#inbox'), .3);
+setInterval(() => { if (CG.on && !answered && left > 0){ left--; ibTick(); } }, 1000); ibTick();
+function ibDone(lines){
+  answered = true; ibTick(); $('#ibAct').hidden = true; $('#ibEdit').hidden = true;
+  const d = $('#ibDone'); d.hidden = false; d.innerHTML = lines.map(l => `<div>✓ ${l}</div>`).join('') + '<button type="button" id="ibReset">Zurücksetzen</button>';
+  $('#ibBadge').textContent = '0 offen'; $('#ibBadge').classList.add('zero');
+  $('#ibReset').onclick = () => { answered = false; left = 38*60; ibTick(); d.hidden = true; $('#ibAct').hidden = false; $('#ibBadge').textContent = '1 offen'; $('#ibBadge').classList.remove('zero'); };
+}
+$$('#ibAct button').forEach(b => b.onclick = () => {
+  const a = b.dataset.a;
+  if (a === 'edit'){ $('#ibAct').hidden = true; $('#ibEdit').hidden = false; return; }
+  if (a === 'ok') ibDone(['Bestätigt · 13:42', 'A. Keller ist informiert', 'Doku: Arzt informiert']);
+  if (a === 'call') ibDone(['Rückruf angefordert', 'A. Keller ruft bis 14:00 an', 'Werley erinnert, falls nicht']);
+});
+$$('#ibSeg button').forEach(b => b.onclick = () => $$('#ibSeg button').forEach(x => x.setAttribute('aria-pressed', x === b)));
+$('#ibSend').onclick = () => {
+  const dose = $('#ibSeg button[aria-pressed="true"]').textContent, amox = $('#ibAmox').checked;
+  ibDone([`Medikationsplan: Torasemid ${dose}`, ...(amox ? ['Amoxicillin abgesetzt'] : []), 'A. Keller ist informiert', 'E-Rezept an Linden-Apotheke']);
+};
+
+/* ================= documentation fan-out ================= */
+const DEST = [
+  {g:'sw', n:'Pflegesoftware', w:'MediFox · Vivendi · SNAP', f:'FHIR R4 · PDF',
+    gets:['Vitalwerte   RR 142/85 · Puls 78', 'Gewicht      71,4 kg (+2,1 kg in 3 Tagen)', 'Wunde        Dekubitus Kat. 2, Ferse re., 2 × 1,5 cm', 'Trinkmenge   400 ml bis 09:20', 'Medikation   Amoxicillin ausgesetzt (Allergie)', 'Freigabe     A. Keller, 09:31'],
+    not:['Nicht freigegebene Entwürfe'], why:'Exportiert wird nur freigegebene Doku.'},
+  {g:'care', n:'Übergabe', w:'Nachtdienst · M. Yilmaz', f:'SBAR',
+    gets:['S  Gewicht +2,1 kg in 3 Tagen, leicht kurzatmig', 'B  Herzinsuffizienz NYHA III, Penicillin-Allergie', 'A  RR 142/85, Puls 78. Amoxicillin neu, nicht gegeben', 'R  Antwort Dr. Weber bis 14:00, Gabe bis dahin aussetzen'],
+    not:['Werte ohne Befund', 'Abrechnungsdaten']},
+  {g:'doc', n:'Hausarzt', w:'Praxis Dr. Weber', f:'Anfrage · Frist 14:00',
+    gets:['Frage     Diuretikum anpassen?', 'Anlass    +2,1 kg in 3 Tagen bei NYHA III', 'Verlauf   69,3 → 70,6 → 71,4 kg', 'Vital     RR 142/85 · Puls 78', 'Achtung   Amoxicillin bei Penicillin-Allergie', 'Antwort   ein Klick · Erinnerung um 13:00'],
+    not:['Grundpflege im Detail', 'Gespräche mit der Familie']},
+  {g:'ven', n:'Apotheke', w:'Linden-Apotheke', f:'Reichweite · E-Rezept',
+    gets:['Torasemid 10 mg   Bestand 6 Tabletten', 'Neue Dosis        20 mg = 2 Tabletten täglich', 'Reicht noch       3 Tage', 'Rezept            bei der Praxis angefordert', 'Lieferung         heute nachmittags'],
+    not:['Pflegedoku', 'Wunde und Vitalwerte']},
+  {g:'you', n:'Familie', w:'Petra Brandt · Werley You', f:'Einfache Sprache',
+    gets:['„Ihrer Mutter geht es heute gut.', 'Sie hat gut geschlafen und 400 ml getrunken.', 'Körperpflege und Verband sind erledigt.', 'Nächster Besuch: morgen um 09:00 Uhr.“'],
+    not:['Medikamente', 'Diagnosen', 'Wundbefund'], why:'Einwilligung von Frau Brandt: Grundpflege und Termine.'},
+  {g:'sw', n:'Abrechnung', w:'DMRZ · Leistungsnachweis', f:'CSV',
+    gets:['Datum      24.11.2026', 'Einsatz    09:14 – 09:38 · A. Keller', 'Leistung   Körperpflege (SGB XI)', 'Leistung   Verbandwechsel (SGB V)', 'Leistung   Medikamentengabe (SGB V)'],
+    not:['Inhalte der Doku', 'Befunde und Werte']}
+];
+const FL = $('#flow'), FS = $('#flsvg'), PAY = $('#payload');
+$('#fdest').innerHTML = DEST.map((d, i) => `<button type="button" class="dst g-${d.g}" data-i="${i}"><i></i><span class="dn"><b>${d.n}</b><span>${d.w}</span></span><span class="ds">wartet</span></button>`).join('');
+const dsts = $$('.dst');
+let rel = false, pick = -1, cyc = 0, shown = 2;
+function flDraw(){
+  FS.innerHTML = ''; const r = FL.getBoundingClientRect(); FS.setAttribute('viewBox', `0 0 ${r.width} ${r.height}`);
+  const box = el => { const b = el.getBoundingClientRect(); return {l:b.left - r.left, t:b.top - r.top, r:b.right - r.left, b:b.bottom - r.top, cx:b.left - r.left + b.width/2, cy:b.top - r.top + b.height/2}; };
+  const g = box($('#gbtn')), s = box($('.fsrc')), d0 = box(dsts[0]);
+  const add = (d, cls) => FS.appendChild(sv('path', {d, class:'fl ' + cls}));
+  if (d0.l > g.r){
+    add(`M${s.r} ${g.cy} H${g.l}`, 'in');
+    dsts.forEach((e, i) => { const D = box(e), m = (D.l - g.r)*.55; add(`M${g.r} ${g.cy} C${g.r + m} ${g.cy} ${D.l - m} ${D.cy} ${D.l} ${D.cy}`, 'out g-' + DEST[i].g); });
+  } else {
+    add(`M${s.cx} ${s.b} V${g.t}`, 'in');
+    add(`M${g.cx} ${g.b} V${box($('#fdest')).t}`, 'out g-care');
+  }
+}
+flDraw(); new ResizeObserver(flDraw).observe(FL);
+function waiting(){ PAY.className = 'payload'; PAY.innerHTML = '<p class="waiting">Wartet auf Freigabe. Nichts verlässt das Gerät, bevor A. Keller prüft und freigibt. Tippen Sie auf „Freigeben“.</p>'; }
+function show(i){
+  shown = i; const d = DEST[i]; dsts.forEach((e, j) => e.classList.toggle('sel', j === i));
+  PAY.className = `payload g-${d.g}`;
+  PAY.innerHTML = `<div class="ph2"><span class="pdot"></span><b>${d.n} · ${d.w}</b><span class="fmt">${d.f}</span></div>
+    <div class="pgrid"><div><span class="pl">bekommt</span><div class="lines">${d.gets.join('\n')}</div></div>
+    <div><span class="pl">bekommt nicht</span><ul>${d.not.map(x => `<li>${x}</li>`).join('')}</ul>${d.why ? `<p class="why">${d.why}</p>` : ''}</div></div>`;
+}
+function release(){
+  if (rel) return; rel = true; FL.classList.add('rel'); $('#gTxt').textContent = 'Freigegeben'; $('#gSub').textContent = 'A. Keller · 09:31';
+  dsts.forEach((e, i) => setTimeout(() => { if (!rel) return; e.classList.add('on'); $('.ds', e).textContent = `✓ 09:31:0${i + 1}`; }, RM ? 0 : 250 + i*230));
+  setTimeout(() => rel && show(pick >= 0 ? pick : 2), RM ? 0 : 400);
+  clearInterval(cyc);
+  if (!RM) cyc = setInterval(() => { if (pick < 0 && FG.on) show((shown + 1) % DEST.length); }, 4200);
+}
+function freset(){ rel = false; pick = -1; clearInterval(cyc); FL.classList.remove('rel'); $('#gTxt').textContent = 'Freigeben'; $('#gSub').textContent = 'A. Keller prüft';
+  dsts.forEach(e => { e.classList.remove('on', 'sel'); $('.ds', e).textContent = 'wartet'; }); waiting(); }
+$('#gbtn').onclick = release;
+dsts.forEach(e => e.onclick = () => { pick = +e.dataset.i; if (!rel) release(); show(pick); });
+$('#fReset').onclick = freset;
+const FG = gate(FL, .4, () => setTimeout(() => release(), RM ? 0 : 2400));
+waiting();
+
+/* ================= one case, five lanes ================= */
+const LANES = [['you', 'Frau Brandt', 'Werley You'], ['care', 'Pflege', 'Werley Nursing'], ['w', 'Werley', 'Agent'], ['doc', 'Praxis Dr. Weber', 'Werley Connect'], ['ven', 'Linden-Apotheke', 'Werley Connect']];
+const EV = [
+  ['Mo 22:10', 0, 'Meldet Schmerz 6/10 an der Ferse'],
+  ['Mo 22:11', 2, 'Gibt es an den Nachtdienst weiter'],
+  ['Mo 22:40', 1, 'Nachtdienst lagert um. Schmerz 3/10'],
+  ['Di 09:16', 1, 'Besuch: 71,4 kg, plus 2,1 kg in 3 Tagen'],
+  ['Di 09:17', 2, 'Erkennt den Trend. Anfrage mit Frist 14:00'],
+  ['Di 13:00', 2, 'Noch keine Antwort: erinnert die Praxis'],
+  ['Di 13:42', 3, 'Torasemid 20 mg, Amoxicillin absetzen'],
+  ['Di 13:44', 2, 'Plan aktualisiert, E-Rezept angefordert'],
+  ['Di 14:30', 4, 'Bestätigt Lieferung für 16:30'],
+  ['Di 16:30', 0, 'Bestätigt: Lieferung ist da']
+];
+const SW = $('#sw'), SWS = $('#swsvg');
+SW.insertAdjacentHTML('beforeend',
+  LANES.map(([g, n, a], l) => `<div class="lab g-${g}" data-l="${l}"><b>${n}</b><span>${a}</span></div><div class="ln g-${g}" data-l="${l}"></div>`).join('') +
+  EV.map(([t, l, x], i) => `<span class="evd g-${LANES[l][0]}"></span><div class="evt g-${LANES[l][0]}"><b>${t}<span class="who"> · ${LANES[l][1]}</span></b>${x}</div>`).join(''));
+$('#swleg').innerHTML = LANES.map(([g, n]) => `<span class="g-${g}"><i></i>${n}</span>`).join('');
+const swWide = matchMedia('(min-width:1000px)');
+const swBase = SWS.appendChild(sv('path', {class:'swb'})), swLive = SWS.appendChild(sv('path', {class:'swl'}));
+const evds = $$('.evd', SW), evts = $$('.evt', SW);
+let fr = [], swLen = 1;
+function swLayout(){
+  const w = swWide.matches;
+  $$('.lab', SW).forEach(e => e.style.gridArea = w ? `${+e.dataset.l + 1} / 1` : '');
+  $$('.ln', SW).forEach(e => { const l = +e.dataset.l; e.style.gridArea = w ? `${l + 1} / 2 / ${l + 2} / -1` : `1 / ${l + 1} / -1 / ${l + 2}`; });
+  EV.forEach(([, l], i) => { evds[i].style.gridArea = w ? `${l + 1} / ${i + 2}` : `${i + 1} / ${l + 1}`; evts[i].style.gridArea = w ? `${l + 1} / ${i + 2}` : `${i + 1} / 7`; });
+  const r = SW.getBoundingClientRect();
+  const P = evds.map(e => { const b = e.getBoundingClientRect(); return [b.left - r.left + b.width/2, b.top - r.top + b.height/2]; });
+  SWS.setAttribute('viewBox', `0 0 ${r.width} ${r.height}`);
+  let d = `M${P[0][0]} ${P[0][1]}`, L = 0; fr = [0];
+  for (let k = 1; k < P.length; k++){
+    const [x0, y0] = P[k - 1], [x1, y1] = P[k];
+    d += w ? ` H${(x0 + x1)/2} V${y1} H${x1}` : ` V${(y0 + y1)/2} H${x1} V${y1}`;
+    L += Math.abs(x1 - x0) + Math.abs(y1 - y0); fr.push(L);
+  }
+  fr = fr.map(v => v/(L || 1));
+  swBase.setAttribute('d', d); swLive.setAttribute('d', d);
+  swLen = swLive.getTotalLength() || 1; swLive.style.strokeDasharray = swLen; swScroll();
+}
+function swScroll(){
+  const r = SW.getBoundingClientRect(), vh = innerHeight;
+  const p = RM ? 1 : Math.max(0, Math.min(1, (vh*.78 - r.top)/(r.height + vh*.23)));
+  swLive.style.strokeDashoffset = swLen*(1 - p);
+  evds.forEach((e, i) => { const on = p >= fr[i] - .002; e.classList.toggle('on', on); evts[i].classList.toggle('on', on); });
+  $('#stamp').classList.toggle('show', p >= .995);
+}
+let swQ = false;
+addEventListener('scroll', () => { if (!swQ){ swQ = true; requestAnimationFrame(() => { swQ = false; swScroll(); }); } }, {passive:true});
+swWide.addEventListener('change', swLayout);
+new ResizeObserver(swLayout).observe(SW);
+swLayout();
+
+/* ================= brick kit ================= */
+const BR = [
+  {id:'doku', g:'care', n:'Sprach-Doku', d:'Besuch sprechen, Felder füllen sich', s:1, p:['Pflege']},
+  {id:'pruef', g:'care', n:'Prüfungen', d:'Allergie, Dosis, Trends, Braden', s:1, p:['Pflege']},
+  {id:'sbar', g:'care', n:'Übergabe SBAR', d:'aus der Doku, ohne Nachtrag', s:1, p:['Team']},
+  {id:'anfrage', g:'doc', n:'Arztanfrage mit Frist', d:'Erinnerung, dann 116117', s:1, p:['Hausarzt']},
+  {id:'rezept', g:'ven', n:'Rezept-Reichweite', d:'Bestand durch Dosis, E-Rezept', s:1, p:['Hausarzt', 'Apotheke']},
+  {id:'ueber', g:'doc', n:'Überleitung', d:'Bogen hin, Entlassbrief zurück, Abgleich', s:1, p:['Klinik']},
+  {id:'notfall', g:'doc', n:'Notfall-Akte', d:'Verfügung, Vollmacht, 112-Skript', s:1, p:['Rettungsdienst']},
+  {id:'familie', g:'you', n:'Angehörigen-Seite', d:'mit Einwilligung, nur lesen', s:1, p:['Familie']},
+  {id:'export', g:'sw', n:'Software-Export', d:'FHIR R4, HL7 v2.5, PDF', s:1, p:['Pflegesoftware']},
+  {id:'abr', g:'sw', n:'Leistungsnachweis', d:'CSV für die Abrechnung', s:1, p:['Abrechnung']},
+  {id:'lokal', g:'care', n:'Lokale KI', d:'ohne Cloud, noch langsamer', s:1, p:[]},
+  {id:'you', g:'you', n:'Werley You', d:'Patientin meldet selbst', s:0, p:['Patientin', 'Familie']},
+  {id:'connect', g:'doc', n:'Werley Connect', d:'Antwort mit einem Klick', s:0, p:['Hausarzt', 'Apotheke', 'Therapie', 'Homecare']},
+  {id:'homecare', g:'ven', n:'Homecare & Hilfsmittel', d:'Bestellung aus dem Wundplan', s:0, p:['Homecare']},
+  {id:'therapie', g:'doc', n:'Therapie', d:'Physio, Ergo, Logo im Plan', s:0, p:['Therapie']}
+];
+const PARTIES = ['Pflege', 'Team', 'Patientin', 'Familie', 'Hausarzt', 'Apotheke', 'Klinik', 'Therapie', 'Homecare', 'Rettungsdienst', 'Pflegesoftware', 'Abrechnung'];
+const PRE = {amb:['Ambulanter Dienst', ['doku', 'pruef', 'sbar', 'anfrage', 'rezept', 'familie', 'export', 'abr', 'you', 'connect', 'homecare']],
+  heim:['Pflegeheim', ['doku', 'pruef', 'sbar', 'anfrage', 'rezept', 'ueber', 'notfall', 'familie', 'export', 'therapie']],
+  klinik:['Klinik-Station', ['doku', 'pruef', 'sbar', 'ueber', 'export', 'lokal']]};
+const sel = new Set(PRE.amb[1]);
+$('#presets').insertAdjacentHTML('beforeend', Object.entries(PRE).map(([k, [n]]) => `<button type="button" data-k="${k}" aria-pressed="${k === 'amb'}">${n}</button>`).join(''));
+$('#bricks').innerHTML = BR.map(b => `<button type="button" class="brick g-${b.g}${b.s ? '' : ' plan'}" data-id="${b.id}" aria-pressed="false"><b>${b.n}</b><span class="bd">${b.d}</span><span class="bs">${b.s ? 'gebaut' : 'geplant'}</span></button>`).join('');
+function bkRender(anim){
+  $$('.brick').forEach(e => e.setAttribute('aria-pressed', sel.has(e.dataset.id)));
+  const tw = $('#tower'), have = new Map($$('i', tw).map(e => [e.dataset.id, e]));
+  for (const [id, e] of have) if (!sel.has(id)) e.remove();
+  for (const id of sel) if (!have.has(id)){ const b = BR.find(x => x.id === id), e = document.createElement('i'); e.className = `g-${b.g}${b.s ? '' : ' plan'}${anim ? ' drop' : ''}`; e.dataset.id = id; e.textContent = b.n; tw.append(e); }
+  const bs = BR.filter(b => sel.has(b.id)), built = bs.filter(b => b.s).length, ps = new Set(bs.flatMap(b => b.p));
+  $('#bkN').textContent = bs.length; $('#bkB').textContent = built; $('#bkP').textContent = bs.length - built;
+  $('#pty').innerHTML = PARTIES.map(p => `<span class="${ps.has(p) ? 'on' : ''}">${p}</span>`).join('');
+  $('#bkC').textContent = `${ps.size} von ${PARTIES.length}`;
+}
+$$('#presets button').forEach(b => b.onclick = () => { sel.clear(); PRE[b.dataset.k][1].forEach(id => sel.add(id)); $$('#presets button').forEach(x => x.setAttribute('aria-pressed', x === b)); $('#tower').innerHTML = ''; bkRender(true); });
+$$('.brick').forEach(b => b.onclick = () => { const id = b.dataset.id; sel.has(id) ? sel.delete(id) : sel.add(id); $$('#presets button').forEach(x => x.setAttribute('aria-pressed', 'false')); bkRender(true); });
+bkRender(false);
+
+/* ================= redaction ================= */
+const PARTS = [['Frau ', 0], ['Helga Brandt', 'P1'], [', ', 0], ['Lindenstraße 8', 'ADRESSE'], [', hat seit Montag 2,1 kg zugenommen. Ihre Tochter ', 0], ['Petra Brandt', 'P2'], [' ist informiert. Bitte ', 0], ['Dr. Weber', 'ARZT'], [' um Rückruf. Versichertennummer ', 0], ['B987654321', 'ID'], ['.', 0]];
+const red = $('#redact');
+red.innerHTML = PARTS.map(([s, t], i) => t ? `<span class="tok" data-i="${i}">[${t}]</span>` : s).join('');
+const glyph = 'ABCDEFGHKLMNPRSTVWXZ0123456789';
+async function toggle(ps){
+  $('#tgRaw').setAttribute('aria-pressed', !ps); $('#tgPs').setAttribute('aria-pressed', ps);
+  for (const el of $$('#redact .tok')){
+    const [s, t] = PARTS[+el.dataset.i], to = ps ? `[${t}]` : s;
+    if (!RM) for (let k = 0; k < 6; k++){ el.textContent = to.replace(/[^\s\[\]]/g, () => glyph[Math.random()*glyph.length | 0]); await wait(32); }
+    el.textContent = to; el.classList.toggle('raw', !ps);
+  }
+}
+$('#tgRaw').onclick = () => toggle(false); $('#tgPs').onclick = () => toggle(true);
+gate(red, .6, async () => { await toggle(false); await wait(900); toggle(true); });
+
+/* ================= count-ups & rise ================= */
+$$('[data-to]').forEach(el => {
+  if (RM) return;
+  const to = +el.dataset.to, small = el.querySelector('small').outerHTML;
+  new IntersectionObserver((es, o) => { if (!es[0].isIntersecting) return; o.disconnect(); const t0 = performance.now();
+    const f = t => { const p = Math.min(1, (t - t0)/1200); el.innerHTML = Math.round(to*(1 - Math.pow(1 - p, 3))) + small; if (p < 1) requestAnimationFrame(f); };
+    requestAnimationFrame(f); }, {threshold:.6}).observe(el);
+});
+if (!RM){
+  const ro = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.remove('pre'); ro.unobserve(e.target); } }), {rootMargin:'0px 0px -8% 0px'});
+  $$('.rise').forEach(el => { const r = el.getBoundingClientRect(); if (r.top > innerHeight){ el.classList.add('pre'); ro.observe(el); } });
+}
+})();
+</script>
+
+</body>
+</html>
